@@ -565,7 +565,12 @@ class Component extends DCLogic {
   KEY = 'pixyo_crm_v1';
 
   defaultSettings() {
-    return { studioName:'Pixyo Studio', email:'pixyo@studio.com', phone:'+60 12-345 6789', address:'Kuala Lumpur', userName:'Admin', userRole:'Admin', plan:'Pelan Percuma' };
+    return { studioName:'Pixyo Studio', email:'', phone:'', address:'', userName:'Admin', userRole:'Admin', plan:'Pelan Percuma' };
+  }
+
+  blank() {
+    const s = this.seed();
+    return { ...s, leads:[], tasks:[], activities:[] };
   }
 
   seed() {
@@ -617,7 +622,7 @@ class Component extends DCLogic {
         return { leads:d.leads||[], tasks:d.tasks||[], automations:d.automations||[], activities:d.activities||[], settings:{...this.defaultSettings(), ...(d.settings||{})} };
       }
     } catch(e) {}
-    const s = this.seed();
+    const s = this.blank();
     try { localStorage.setItem(this.KEY, JSON.stringify(s)); } catch(e) {}
     return s;
   }
