@@ -1,2 +1,3 @@
-.thumbnail
-uploads/
+# Workspace-level ignores (crm-server/ has its own .gitignore for vendor, .env, etc.)
+/Dashboard CRM request.zip
+*.zip

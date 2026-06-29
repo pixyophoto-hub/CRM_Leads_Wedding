@@ -1,29 +1,29 @@
-# Pixyo CRM Dashboard
+# Pixyo Wedding CRM
 
-Single-page CRM dashboard for a wedding-photography studio (Bahasa Melayu UI) — leads, messages, tasks, automation, reports, contacts and settings.
+CRM untuk studio fotografi perkahwinan (UI Bahasa Melayu). Satu repo, dua bahagian:
 
-> **This is now the front-end of a backend-driven app.** As of Phase 1 the dashboard
-> reads/writes data from a Laravel + MySQL backend (the `crm-server` app) via `/api/*`,
-> so leads from Google can flow in automatically and data is shared, not per-browser.
-> Opening `index.html` on its own will just show "Memuatkan…" — it needs the backend.
+```
+Dashboard CRM request/   # Sumber dashboard (front-end DC: index.html + support.js)
+crm-server/              # Backend Laravel + MySQL (API + webhook Google) — melayani dashboard
+```
 
-## Files
-- `index.html` — dashboard source (DC template + logic, wired to the API).
-- `CRM Dashboard.dc.html` — same app in Design Component format (kept in sync).
-- `support.js` — the DC runtime (loads React 18 from a CDN and mounts the app).
+## Bahagian
+- **`crm-server/`** — app Laravel 12 + MySQL (`pixyo_wedding`). Melayani dashboard di `/`,
+  API di `/api/*`, dan webhook Google di `/api/webhook/google/{secret}`. Lihat
+  [`crm-server/README.md`](crm-server/README.md) untuk cara jalankan + sambung Google.
+- **`Dashboard CRM request/`** — sumber dashboard (boleh edit). Selepas edit, sync ke backend
+  dengan `python crm-server/sync-dashboard.py`. Lihat
+  [`Dashboard CRM request/README.md`](Dashboard%20CRM%20request/README.md).
 
-## Run
-The backend serves this dashboard at its root URL. Run the `crm-server` Laravel app
-(see its README), then open `http://127.0.0.1:8091/`. After editing this source, copy it
-into the backend with `python ../crm-server/sync-dashboard.py`.
+## Mula cepat (local)
+1. Hidupkan MySQL XAMPP.
+2. `cd crm-server` → `C:\xampp\php\php.exe artisan serve --port=8091`
+3. Buka `http://127.0.0.1:8091/`.
 
-The earlier standalone/localStorage version (no backend) is in this repo's git history.
+## Status
+- **Phase 1 (Google) — siap.** Lead dari Google Form/Sheet → webhook → CRM, data dalam pangkalan data.
+- Akan datang: WhatsApp, Landing Page, Meta Ads, login berbilang pengguna, hosting 24/7.
 
-## Features
-- 9 views: Dashboard, Leads, Messages, Calendar, Tasks, Automation, Reports, Contacts, Settings.
-- Real CRUD with persistence: add/edit-status/delete leads, send messages, add/tick/delete tasks, toggle automations, add contacts, save settings.
-- All KPIs, donut/funnel charts, reports and the calendar are derived from your data.
-- "Padam Semua Data" / "Muat Data Contoh" in Settings to reset or reseed.
-
-## Note
-Data lives in the browser's `localStorage`, so it is per-device and not shared between machines. Multi-user / shared data would require a backend (e.g. Laravel + database).
+## Nota keselamatan
+Rahsia (token API, webhook secret, kunci app) ada dalam `crm-server/.env` yang **tidak**
+dimasukkan ke git. `vendor/` juga dikecualikan — jalankan `composer install` selepas clone.
