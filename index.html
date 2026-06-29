@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pixyo CRM</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: #f0f0f7; overflow: hidden; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color:#6366f1; }
+    select { font-family:'Plus Jakarta Sans',sans-serif; }
+  </style>
+</helmet>
+
+<div style="display:flex; height:100vh; font-family:'Plus Jakarta Sans',sans-serif; overflow:hidden; background:#f0f0f7">
+
+  <!-- SIDEBAR -->
+  <aside style="width:215px; min-width:215px; height:100vh; background:white; border-right:1px solid #ebebf4; display:flex; flex-direction:column; overflow:hidden; flex-shrink:0; z-index:10">
+    <div style="padding:17px 16px 14px; display:flex; align-items:center; gap:9px; border-bottom:1px solid #f0f0f8">
+      <div style="width:32px; height:32px; background:#6366f1; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="white"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+      </div>
+      <span style="font-size:15px; font-weight:800; color:#1e1b4b; letter-spacing:-0.3px">Pixyo CRM</span>
+    </div>
+
+    <nav style="flex:1; padding:10px 10px 6px; overflow-y:auto; display:flex; flex-direction:column; gap:1px">
+
+      <div onClick="{{ navOnClick.dashboard }}" style="position:relative; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; background:{{ navBg.dashboard }}">
+        <sc-if value="{{ navShowBar.dashboard }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:22px; background:#6366f1; border-radius:0 3px 3px 0"></div></sc-if>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor.dashboard }}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span style="font-size:13px; font-weight:{{ navTextWeight.dashboard }}; color:{{ navTextColor.dashboard }}">Dashboard</span>
+      </div>
+
+      <div onClick="{{ navOnClick.leads }}" style="position:relative; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; background:{{ navBg.leads }}">
+        <sc-if value="{{ navShowBar.leads }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:22px; background:#6366f1; border-radius:0 3px 3px 0"></div></sc-if>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor.leads }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span style="font-size:13px; font-weight:{{ navTextWeight.leads }}; color:{{ navTextColor.leads }}">Leads</span>
+      </div>
+
+      <div onClick="{{ navOnClick.messages }}" style="position:relative; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; background:{{ navBg.messages }}">
+        <sc-if value="{{ navShowBar.messages }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:22px; background:#6366f1; border-radius:0 3px 3px 0"></div></sc-if>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor.messages }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span style="font-size:13px; font-weight:{{ navTextWeight.messages }}; color:{{ navTextColor.messages }}">Messages</span>
+        <sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ true }}"><div style="margin-left:auto; background:#6366f1; color:white; font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:20px; line-height:1.6">{{ unreadCount }}</div></sc-if>
+      </div>
+
+      <div onClick="{{ navOnClick.calendar }}" style="position:relative; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; background:{{ navBg.calendar }}">
+        <sc-if value="{{ navShowBar.calendar }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:22px; background:#6366f1; border-radius:0 3px 3px 0"></div></sc-if>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor.calendar }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <span style="font-size:13px; font-weight:{{ navTextWeight.calendar }}; color:{{ navTextColor.calendar }}">Calendar</span>
+      </div>
+
+      <div onClick="{{ navOnClick.tasks }}" style="position:relative; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; background:{{ navBg.tasks }}">
+        <sc-if value="{{ navShowBar.tasks }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:22px; background:#6366f1; border-radius:0 3px 3px 0"></div></sc-if>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor.tasks }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+        <span style="font-size:13px; font-weight:{{ navTextWeight.tasks }}; color:{{ navTextColor.tasks }}">Tasks</span>
+      </div>
+
+      <div onClick="{{ navOnClick.automation }}" style="position:relative; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; background:{{ navBg.automation }}">
+        <sc-if value="{{ navShowBar.automation }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:22px; background:#6366f1; border-radius:0 3px 3px 0"></div></sc-if>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor.automation }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <span style="font-size:13px; font-weight:{{ navTextWeight.automation }}; color:{{ navTextColor.automation }}">Automation</span>
+      </div>
+
+      <div onClick="{{ navOnClick.reports }}" style="position:relative; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; background:{{ navBg.reports }}">
+        <sc-if value="{{ navShowBar.reports }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:22px; background:#6366f1; border-radius:0 3px 3px 0"></div></sc-if>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor.reports }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        <span style="font-size:13px; font-weight:{{ navTextWeight.reports }}; color:{{ navTextColor.reports }}">Reports</span>
+      </div>
+
+      <div onClick="{{ navOnClick.contacts }}" style="position:relative; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; background:{{ navBg.contacts }}">
+        <sc-if value="{{ navShowBar.contacts }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:22px; background:#6366f1; border-radius:0 3px 3px 0"></div></sc-if>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor.contacts }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span style="font-size:13px; font-weight:{{ navTextWeight.contacts }}; color:{{ navTextColor.contacts }}">Contacts</span>
+      </div>
+
+      <div onClick="{{ navOnClick.settings }}" style="position:relative; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; background:{{ navBg.settings }}">
+        <sc-if value="{{ navShowBar.settings }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; left:0; top:50%; transform:translateY(-50%); width:3px; height:22px; background:#6366f1; border-radius:0 3px 3px 0"></div></sc-if>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor.settings }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span style="font-size:13px; font-weight:{{ navTextWeight.settings }}; color:{{ navTextColor.settings }}">Settings</span>
+      </div>
+    </nav>
+
+    <div style="margin:0 10px 10px; background:#f5f3ff; border-radius:10px; padding:13px 12px">
+      <p style="font-size:11px; font-weight:700; color:#4c1d95; margin-bottom:9px; text-transform:uppercase; letter-spacing:0.6px">Peringatan Hari Ini</p>
+      <div onClick="{{ goFollowUp }}" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; cursor:pointer"><span style="font-size:12.5px; color:#6b7280">Follow up</span><span style="font-size:12px; font-weight:700; color:#5b21b6; background:white; padding:1px 9px; border-radius:20px">{{ remFollowUp }}</span></div>
+      <div onClick="{{ goQuotation }}" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; cursor:pointer"><span style="font-size:12.5px; color:#6b7280">Quotation</span><span style="font-size:12px; font-weight:700; color:#5b21b6; background:white; padding:1px 9px; border-radius:20px">{{ remQuotation }}</span></div>
+      <div onClick="{{ navOnClick.tasks }}" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:9px; cursor:pointer"><span style="font-size:12.5px; color:#6b7280">Tugasan hari ini</span><span style="font-size:12px; font-weight:700; color:#5b21b6; background:white; padding:1px 9px; border-radius:20px">{{ remTasks }}</span></div>
+      <div onClick="{{ navOnClick.tasks }}" style="text-align:center; cursor:pointer"><span style="font-size:11.5px; font-weight:600; color:#6366f1">Lihat Semua</span></div>
+    </div>
+
+    <div style="padding:12px 14px; border-top:1px solid #f0f0f8">
+      <div style="display:flex; align-items:center; gap:9px">
+        <div style="width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); display:flex; align-items:center; justify-content:center; color:white; font-size:12px; font-weight:800; flex-shrink:0">{{ studioInitial }}</div>
+        <div style="flex:1; min-width:0"><p style="font-size:12.5px; font-weight:700; color:#1e1b4b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ settings.studioName }}</p><p style="font-size:10.5px; color:#9ca3af">{{ settings.plan }}</p></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div style="flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0">
+
+    <!-- TOP BAR -->
+    <div style="background:white; border-bottom:1px solid #ebebf4; padding:10px 22px; display:flex; align-items:center; gap:12px; flex-shrink:0">
+      <div style="flex:1; max-width:380px; position:relative">
+        <div style="position:absolute; left:11px; top:50%; transform:translateY(-50%); pointer-events:none"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+        <input type="text" value="{{ search }}" onInput="{{ onSearch }}" placeholder="Cari lead ikut nama, telefon, source..." style="width:100%; padding:7px 14px 7px 32px; border:1px solid #e5e7eb; border-radius:20px; font-size:12px; color:#374151; background:#f9fafb; font-family:inherit"/>
+      </div>
+      <div style="flex:1"></div>
+      <div onClick="{{ navOnClick.messages }}" style="position:relative; cursor:pointer"><div style="width:34px; height:34px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; display:flex; align-items:center; justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></div><sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ true }}"><div style="position:absolute; top:-3px; right:-3px; min-width:15px; height:15px; padding:0 3px; background:#ef4444; border-radius:50%; border:2px solid white; display:flex; align-items:center; justify-content:center"><span style="font-size:7.5px; font-weight:800; color:white">{{ unreadCount }}</span></div></sc-if></div>
+      <div onClick="{{ navOnClick.messages }}" style="cursor:pointer; width:34px; height:34px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; display:flex; align-items:center; justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+      <div onClick="{{ navOnClick.settings }}" style="display:flex; align-items:center; gap:8px; cursor:pointer; padding:4px 10px 4px 5px; border-radius:10px; border:1px solid #e5e7eb; background:#f9fafb">
+        <div style="width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,#f59e0b,#ef4444); display:flex; align-items:center; justify-content:center; color:white; font-size:10px; font-weight:800">{{ userInitial }}</div>
+        <div><p style="font-size:12px; font-weight:700; color:#1e1b4b; line-height:1.2">{{ settings.userName }}</p><p style="font-size:9.5px; color:#9ca3af; line-height:1.2">{{ settings.userRole }}</p></div>
+      </div>
+    </div>
+
+    <!-- SCROLLABLE CONTENT -->
+    <div style="flex:1; overflow-y:auto; padding:20px 22px 28px">
+
+      <!-- PAGE HEADER -->
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px">
+        <div>
+          <h1 style="font-size:24px; font-weight:800; color:#111827; letter-spacing:-0.5px">{{ pageTitle }}</h1>
+          <p style="font-size:12.5px; color:#9ca3af; margin-top:2px">{{ pageSubtitle }}</p>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center">
+          <sc-if value="{{ showAddLead }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ openLeadModal }}" style="display:flex; align-items:center; gap:6px; background:#6366f1; color:white; border-radius:8px; padding:8px 14px; cursor:pointer; font-size:13px; font-weight:600">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Tambah Lead
+            </div>
+          </sc-if>
+          <sc-if value="{{ showAddTask }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ openTaskModal }}" style="display:flex; align-items:center; gap:6px; background:#6366f1; color:white; border-radius:8px; padding:8px 14px; cursor:pointer; font-size:13px; font-weight:600">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Tambah Tugasan
+            </div>
+          </sc-if>
+          <sc-if value="{{ showAddContact }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ openContactModal }}" style="display:flex; align-items:center; gap:6px; background:#6366f1; color:white; border-radius:8px; padding:8px 14px; cursor:pointer; font-size:13px; font-weight:600">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Tambah Kenalan
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <!-- ===== DASHBOARD ===== -->
+      <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:16px">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="6">
+            <div style="background:white; border-radius:12px; padding:14px 16px; border:1px solid #ebebf4"><div style="display:flex; align-items:center; gap:9px; margin-bottom:10px"><div style="width:36px; height:36px; background:{{ k.iconBg }}; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0">{{ k.iconEl }}</div><span style="font-size:11.5px; color:#6b7280; font-weight:500">{{ k.label }}</span></div><p style="font-size:28px; font-weight:800; color:#111827; line-height:1">{{ k.value }}</p></div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1.1fr 1fr 0.85fr; gap:14px; margin-bottom:14px">
+          <div style="background:white; border-radius:12px; padding:16px 18px; border:1px solid #ebebf4">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px"><h3 style="font-size:13px; font-weight:700; color:#111827">Leads by Source</h3></div>
+            <div style="display:flex; align-items:center; gap:14px">
+              {{ sourceDonut }}
+              <div style="flex:1; min-width:0">
+                <sc-for list="{{ sourceData }}" as="src" hint-placeholder-count="5">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px"><div style="display:flex; align-items:center; gap:6px"><div style="width:9px; height:9px; border-radius:2px; background:{{ src.color }}; flex-shrink:0"></div><span style="font-size:12px; color:#6b7280">{{ src.label }}</span></div><div style="display:flex; align-items:center; gap:3px"><span style="font-size:12px; font-weight:700; color:#111827">{{ src.pct }}%</span><span style="font-size:10.5px; color:#9ca3af">({{ src.value }})</span></div></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="background:white; border-radius:12px; padding:16px 18px; border:1px solid #ebebf4">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px"><h3 style="font-size:13px; font-weight:700; color:#111827">Leads Funnel</h3></div>
+            <div style="display:flex; align-items:center; gap:10px">
+              {{ funnel }}
+              <div style="flex:1">
+                <sc-for list="{{ funnelStages }}" as="stage" hint-placeholder-count="5">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px"><span style="font-size:11.5px; color:#6b7280">{{ stage.label }}</span><div style="display:flex; align-items:center; gap:4px"><span style="font-size:12px; font-weight:700; color:#111827">{{ stage.count }}</span><span style="font-size:10.5px; color:#9ca3af">({{ stage.pct }}%)</span></div></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="background:white; border-radius:12px; padding:16px 18px; border:1px solid #ebebf4">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px"><h3 style="font-size:13px; font-weight:700; color:#111827">Aktiviti Terkini</h3></div>
+            <sc-if value="{{ hasActivities }}" hint-placeholder-val="{{ true }}">
+              <sc-for list="{{ recentActivities }}" as="act" hint-placeholder-count="4">
+                <div style="display:flex; gap:10px; padding:9px 0; border-bottom:1px solid #f5f5fb; align-items:flex-start"><div style="width:30px; height:30px; background:{{ act.iconBg }}; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px">{{ act.iconEl }}</div><div style="flex:1; min-width:0"><p style="font-size:12px; font-weight:600; color:#111827">{{ act.title }}</p><p style="font-size:11px; color:#9ca3af; margin-top:2px">{{ act.name }}</p></div><span style="font-size:10.5px; color:#9ca3af; white-space:nowrap; padding-top:1px">{{ act.time }}</span></div>
+              </sc-for>
+            </sc-if>
+            <sc-if value="{{ noActivities }}" hint-placeholder-val="{{ false }}"><p style="font-size:12px; color:#9ca3af; padding:14px 0">Belum ada aktiviti.</p></sc-if>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:2fr 1.15fr; gap:14px; margin-bottom:14px">
+          <div style="background:white; border-radius:12px; padding:16px 18px; border:1px solid #ebebf4">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px"><h3 style="font-size:13px; font-weight:700; color:#111827">Lead Terkini</h3><span onClick="{{ navOnClick.leads }}" style="font-size:11.5px; color:#6366f1; font-weight:600; cursor:pointer">Lihat Semua</span></div>
+            <sc-if value="{{ hasLeads }}" hint-placeholder-val="{{ true }}">
+              <table style="width:100%; border-collapse:collapse">
+                <thead><tr><th style="text-align:left; font-size:10.5px; color:#9ca3af; font-weight:600; padding-bottom:9px; padding-right:10px; white-space:nowrap; text-transform:uppercase; letter-spacing:0.4px">Nama</th><th style="text-align:left; font-size:10.5px; color:#9ca3af; font-weight:600; padding-bottom:9px; padding-right:10px; text-transform:uppercase; letter-spacing:0.4px">Source</th><th style="text-align:left; font-size:10.5px; color:#9ca3af; font-weight:600; padding-bottom:9px; padding-right:10px; white-space:nowrap; text-transform:uppercase; letter-spacing:0.4px">Pakej</th><th style="text-align:left; font-size:10.5px; color:#9ca3af; font-weight:600; padding-bottom:9px; padding-right:10px; text-transform:uppercase; letter-spacing:0.4px">Status</th><th style="text-align:left; font-size:10.5px; color:#9ca3af; font-weight:600; padding-bottom:9px; padding-right:10px; text-transform:uppercase; letter-spacing:0.4px">PIC</th><th style="text-align:left; font-size:10.5px; color:#9ca3af; font-weight:600; padding-bottom:9px; white-space:nowrap; text-transform:uppercase; letter-spacing:0.4px">Last Contact</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ latestLeads }}" as="lead" hint-placeholder-count="7">
+                    <tr style="border-top:1px solid #f5f5fb"><td style="padding:8px 10px 8px 0; font-size:12px; font-weight:600; color:#111827; white-space:nowrap">{{ lead.name }}</td><td style="padding:8px 10px 8px 0; font-size:11.5px; color:#6b7280">{{ lead.source }}</td><td style="padding:8px 10px 8px 0; font-size:11.5px; color:#6b7280">{{ lead.service }}</td><td style="padding:8px 10px 8px 0"><span style="{{ lead.badgeStyle }}">{{ lead.status }}</span></td><td style="padding:8px 10px 8px 0; font-size:11.5px; color:#6b7280">{{ lead.pic }}</td><td style="padding:8px 0; font-size:11px; color:#9ca3af; white-space:nowrap">{{ lead.lastContact }}</td></tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </sc-if>
+            <sc-if value="{{ noLeads }}" hint-placeholder-val="{{ false }}"><p style="font-size:12px; color:#9ca3af; padding:14px 0">Belum ada lead. Klik <b>Tambah Lead</b> untuk bermula.</p></sc-if>
+          </div>
+          <div style="background:white; border-radius:12px; padding:16px 18px; border:1px solid #ebebf4">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px"><h3 style="font-size:12.5px; font-weight:700; color:#111827">Status Overview</h3></div>
+            <div style="display:flex; justify-content:center; margin-bottom:12px">{{ statusDonut }}</div>
+            <sc-for list="{{ statusData }}" as="st" hint-placeholder-count="7">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:7px"><div style="display:flex; align-items:center; gap:6px"><div style="width:8px; height:8px; border-radius:2px; background:{{ st.color }}; flex-shrink:0"></div><span style="font-size:11px; color:#6b7280">{{ st.label }}</span></div><div style="display:flex; align-items:center; gap:3px"><span style="font-size:11px; font-weight:700; color:#111827">{{ st.pct }}%</span><span style="font-size:10.5px; color:#9ca3af">({{ st.value }})</span></div></div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===== LEADS ===== -->
+      <sc-if value="{{ isLeads }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:16px">
+          <div style="background:white; border-radius:12px; padding:14px 16px; border:1px solid #ebebf4"><p style="font-size:11.5px; color:#6b7280; font-weight:500; margin-bottom:8px">Semua Leads</p><p style="font-size:26px; font-weight:800; color:#111827">{{ cntAll }}</p></div>
+          <div style="background:white; border-radius:12px; padding:14px 16px; border:1px solid #ebebf4"><p style="font-size:11.5px; color:#6b7280; font-weight:500; margin-bottom:8px">New Lead</p><p style="font-size:26px; font-weight:800; color:#3b82f6">{{ cntNew }}</p></div>
+          <div style="background:white; border-radius:12px; padding:14px 16px; border:1px solid #ebebf4"><p style="font-size:11.5px; color:#6b7280; font-weight:500; margin-bottom:8px">Dalam Proses</p><p style="font-size:26px; font-weight:800; color:#8b5cf6">{{ cntProgress }}</p></div>
+          <div style="background:white; border-radius:12px; padding:14px 16px; border:1px solid #ebebf4"><p style="font-size:11.5px; color:#6b7280; font-weight:500; margin-bottom:8px">Booked</p><p style="font-size:26px; font-weight:800; color:#22c55e">{{ cntBooked }}</p></div>
+          <div style="background:white; border-radius:12px; padding:14px 16px; border:1px solid #ebebf4"><p style="font-size:11.5px; color:#6b7280; font-weight:500; margin-bottom:8px">Lost</p><p style="font-size:26px; font-weight:800; color:#ef4444">{{ cntLost }}</p></div>
+        </div>
+
+        <div style="background:white; border-radius:12px; border:1px solid #ebebf4; overflow:hidden">
+          <div style="padding:14px 18px; border-bottom:1px solid #f0f0f8; display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+            <div style="display:flex; gap:4px; flex-wrap:wrap">
+              <sc-for list="{{ leadTabs }}" as="tab" hint-placeholder-count="5">
+                <div onClick="{{ tab.onClick }}" style="{{ tab.style }}">{{ tab.label }}</div>
+              </sc-for>
+            </div>
+            <div style="flex:1"></div>
+            <div style="position:relative"><div style="position:absolute; left:10px; top:50%; transform:translateY(-50%)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div><input type="text" value="{{ search }}" onInput="{{ onSearch }}" placeholder="Cari leads..." style="padding:6px 10px 6px 28px; border:1px solid #e5e7eb; border-radius:7px; font-size:12px; background:#f9fafb; font-family:inherit; width:180px"/></div>
+          </div>
+          <sc-if value="{{ hasFilteredLeads }}" hint-placeholder-val="{{ true }}">
+            <table style="width:100%; border-collapse:collapse">
+              <thead style="background:#fafafa"><tr><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px 16px; text-transform:uppercase; letter-spacing:0.4px">Nama</th><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px; text-transform:uppercase; letter-spacing:0.4px">No. Telefon</th><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px; text-transform:uppercase; letter-spacing:0.4px">Source</th><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px; text-transform:uppercase; letter-spacing:0.4px">Pakej</th><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px; text-transform:uppercase; letter-spacing:0.4px">Status</th><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px; text-transform:uppercase; letter-spacing:0.4px">PIC</th><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px; text-transform:uppercase; letter-spacing:0.4px">Last Contact</th><th style="padding:10px 16px; width:30px"></th></tr></thead>
+              <tbody>
+                <sc-for list="{{ filteredLeads }}" as="lead" hint-placeholder-count="10">
+                  <tr style="border-top:1px solid #f5f5fb">
+                    <td style="padding:10px 16px; font-size:12.5px; font-weight:600; color:#111827; white-space:nowrap">{{ lead.name }}</td>
+                    <td style="padding:10px; font-size:12px; color:#6b7280; white-space:nowrap">{{ lead.phone }}</td>
+                    <td style="padding:10px; font-size:12px; color:#6b7280">{{ lead.source }}</td>
+                    <td style="padding:10px; font-size:12px; color:#6b7280">{{ lead.service }}</td>
+                    <td style="padding:10px"><select value="{{ lead.status }}" onChange="{{ lead.onStatusChange }}" style="{{ lead.selectStyle }}">
+                      <sc-for list="{{ statusOptions }}" as="opt" hint-placeholder-count="7"><option value="{{ opt }}">{{ opt }}</option></sc-for>
+                    </select></td>
+                    <td style="padding:10px; font-size:12px; color:#6b7280">{{ lead.pic }}</td>
+                    <td style="padding:10px; font-size:11.5px; color:#9ca3af; white-space:nowrap">{{ lead.lastContact }}</td>
+                    <td style="padding:10px 16px; text-align:center"><div onClick="{{ lead.onDelete }}" style="cursor:pointer; display:inline-flex"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </sc-if>
+          <sc-if value="{{ noFilteredLeads }}" hint-placeholder-val="{{ false }}"><p style="font-size:12.5px; color:#9ca3af; padding:28px 18px; text-align:center">Tiada lead dijumpai.</p></sc-if>
+          <div style="padding:12px 18px; border-top:1px solid #f0f0f8; display:flex; align-items:center; justify-content:space-between">
+            <span style="font-size:12px; color:#9ca3af">Menunjukkan {{ filteredCount }} daripada {{ cntAll }} leads</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===== MESSAGES ===== -->
+      <sc-if value="{{ isMessages }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ hasConversations }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; height:calc(100vh - 186px); border-radius:12px; border:1px solid #ebebf4; overflow:hidden; background:white">
+            <div style="width:295px; border-right:1px solid #ebebf4; display:flex; flex-direction:column; flex-shrink:0">
+              <div style="padding:12px 14px 10px; border-bottom:1px solid #f0f0f8">
+                <div style="position:relative"><div style="position:absolute; left:10px; top:50%; transform:translateY(-50%)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div><input type="text" value="{{ search }}" onInput="{{ onSearch }}" placeholder="Cari perbualan..." style="width:100%; padding:7px 10px 7px 28px; border:1px solid #e5e7eb; border-radius:8px; font-size:12px; background:#f9fafb; font-family:inherit"/></div>
+              </div>
+              <div style="flex:1; overflow-y:auto">
+                <sc-for list="{{ conversations }}" as="conv" hint-placeholder-count="5">
+                  <div onClick="{{ conv.onClick }}" style="display:flex; gap:10px; padding:11px 14px; border-bottom:1px solid #f8f8fc; cursor:pointer; background:{{ conv.containerBg }}; align-items:flex-start">
+                    <div style="position:relative; flex-shrink:0">
+                      <div style="width:36px; height:36px; border-radius:50%; background:{{ conv.avatarBg }}; display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:700">{{ conv.initial }}</div>
+                      <div style="position:absolute; bottom:-1px; right:-1px; width:14px; height:14px; border-radius:50%; background:{{ conv.platformColor }}; border:2px solid white; display:flex; align-items:center; justify-content:center"><span style="font-size:5.5px; font-weight:900; color:white">{{ conv.platform }}</span></div>
+                    </div>
+                    <div style="flex:1; min-width:0">
+                      <div style="display:flex; justify-content:space-between; margin-bottom:3px"><span style="font-size:12.5px; font-weight:700; color:#111827">{{ conv.name }}</span><span style="font-size:10.5px; color:#9ca3af">{{ conv.time }}</span></div>
+                      <p style="font-size:11.5px; color:#6b7280; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ conv.lastMsg }}</p>
+                    </div>
+                    <sc-if value="{{ conv.unread }}" hint-placeholder-val="{{ false }}"><div style="width:9px; height:9px; background:#6366f1; border-radius:50%; flex-shrink:0; margin-top:5px"></div></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; overflow:hidden">
+              <div style="padding:12px 18px; border-bottom:1px solid #f0f0f8; display:flex; align-items:center; gap:12px">
+                <div style="width:34px; height:34px; border-radius:50%; background:{{ activeConv.avatarBg }}; display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:700; flex-shrink:0">{{ activeConv.initial }}</div>
+                <div style="flex:1"><p style="font-size:13.5px; font-weight:700; color:#111827">{{ activeConv.name }}</p><p style="font-size:11.5px; color:#9ca3af">{{ activeConv.status }} · via {{ activeConv.platform }}</p></div>
+              </div>
+              <div style="flex:1; overflow-y:auto; padding:16px 18px; background:#f9fafb; display:flex; flex-direction:column; gap:2px">
+                <sc-if value="{{ hasChat }}" hint-placeholder-val="{{ true }}">
+                  <sc-for list="{{ chatMessages }}" as="msg" hint-placeholder-count="5">
+                    <div style="{{ msg.wrapperStyle }}"><div style="{{ msg.bubbleStyle }}"><p style="line-height:1.5; word-break:break-word">{{ msg.text }}</p><p style="font-size:10px; opacity:0.6; margin-top:5px">{{ msg.time }}</p></div></div>
+                  </sc-for>
+                </sc-if>
+                <sc-if value="{{ noChat }}" hint-placeholder-val="{{ false }}"><p style="font-size:12px; color:#9ca3af; text-align:center; margin-top:20px">Belum ada mesej. Mulakan perbualan di bawah.</p></sc-if>
+              </div>
+              <div style="padding:10px 18px; border-top:1px solid #f0f0f8; background:white">
+                <div style="display:flex; align-items:center; gap:10px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:7px 12px">
+                  <input type="text" value="{{ draft }}" onInput="{{ onDraft }}" onKeyDown="{{ onDraftKey }}" placeholder="Taip mesej anda..." style="flex:1; background:transparent; border:none; outline:none; font-size:13px; font-family:inherit; color:#374151"/>
+                  <div onClick="{{ sendMessage }}" style="width:30px; height:30px; background:#6366f1; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noConversations }}" hint-placeholder-val="{{ false }}">
+          <div style="background:white; border-radius:12px; border:1px solid #ebebf4; padding:48px; text-align:center"><p style="font-size:13px; color:#9ca3af">Belum ada perbualan. Tambah lead dahulu untuk mula menghantar mesej.</p></div>
+        </sc-if>
+      </sc-if>
+
+      <!-- ===== CALENDAR ===== -->
+      <sc-if value="{{ isCalendar }}" hint-placeholder-val="{{ false }}">
+        <div style="background:white; border-radius:12px; border:1px solid #ebebf4; overflow:hidden">
+          <div style="padding:14px 20px; border-bottom:1px solid #f0f0f8; display:flex; align-items:center; justify-content:space-between">
+            <h3 style="font-size:16px; font-weight:700; color:#111827">{{ calTitle }}</h3>
+            <span style="font-size:12px; color:#9ca3af">Tugasan &amp; tempahan dari data anda</span>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(7,1fr); border-bottom:1px solid #f0f0f8">
+            <div style="padding:10px; text-align:center; font-size:11px; font-weight:600; color:#9ca3af">AHA</div>
+            <div style="padding:10px; text-align:center; font-size:11px; font-weight:600; color:#9ca3af">ISN</div>
+            <div style="padding:10px; text-align:center; font-size:11px; font-weight:600; color:#9ca3af">SEL</div>
+            <div style="padding:10px; text-align:center; font-size:11px; font-weight:600; color:#9ca3af">RAB</div>
+            <div style="padding:10px; text-align:center; font-size:11px; font-weight:600; color:#9ca3af">KHA</div>
+            <div style="padding:10px; text-align:center; font-size:11px; font-weight:600; color:#9ca3af">JUM</div>
+            <div style="padding:10px; text-align:center; font-size:11px; font-weight:600; color:#9ca3af">SAB</div>
+          </div>
+          <sc-for list="{{ calWeeks }}" as="week" hint-placeholder-count="5">
+            <div style="display:grid; grid-template-columns:repeat(7,1fr); border-bottom:1px solid #f0f0f8">
+              <sc-for list="{{ week }}" as="dayObj" hint-placeholder-count="7">
+                <div style="min-height:88px; border-right:1px solid #f0f0f8; padding:6px 7px; background:{{ dayObj.cellBg }}">
+                  <sc-if value="{{ dayObj.hasDay }}" hint-placeholder-val="{{ true }}">
+                    <div style="margin-bottom:4px"><div style="{{ dayObj.dayNumStyle }}">{{ dayObj.dayNum }}</div></div>
+                    <sc-for list="{{ dayObj.events }}" as="event" hint-placeholder-count="0">
+                      <div style="{{ event.chipStyle }}">{{ event.label }}</div>
+                    </sc-for>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ===== TASKS ===== -->
+      <sc-if value="{{ isTasks }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:14px">
+          <sc-for list="{{ taskGroups }}" as="group" hint-placeholder-count="3">
+            <div style="background:white; border-radius:12px; border:1px solid #ebebf4; overflow:hidden">
+              <div style="padding:12px 18px; border-bottom:1px solid #f0f0f8; display:flex; align-items:center; gap:8px">
+                <h3 style="font-size:13px; font-weight:700; color:#111827">{{ group.title }}</h3>
+                <div style="min-width:20px; height:20px; padding:0 6px; border-radius:10px; background:{{ group.countBg }}; display:flex; align-items:center; justify-content:center"><span style="font-size:10px; font-weight:800; color:{{ group.countColor }}">{{ group.count }}</span></div>
+              </div>
+              <sc-if value="{{ group.hasTasks }}" hint-placeholder-val="{{ true }}">
+                <sc-for list="{{ group.tasks }}" as="task" hint-placeholder-count="3">
+                  <div style="display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid #f8f8fc">
+                    <div onClick="{{ task.onToggle }}" style="{{ task.checkStyle }}">
+                      <sc-if value="{{ task.done }}" hint-placeholder-val="{{ false }}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg></sc-if>
+                    </div>
+                    <div style="flex:1; min-width:0">
+                      <p style="{{ task.titleStyle }}">{{ task.title }}</p>
+                      <div style="display:flex; align-items:center; gap:10px; margin-top:3px">
+                        <span style="font-size:11px; color:#9ca3af">{{ task.due }}</span>
+                        <div style="display:flex; align-items:center; gap:4px"><div style="width:16px; height:16px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); display:flex; align-items:center; justify-content:center"><span style="font-size:7px; font-weight:800; color:white">{{ task.assigneeInitial }}</span></div><span style="font-size:11px; color:#9ca3af">{{ task.assignee }}</span></div>
+                      </div>
+                    </div>
+                    <span style="font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:20px; background:{{ task.pBg }}; color:{{ task.pColor }}; white-space:nowrap">{{ task.priority }}</span>
+                    <div onClick="{{ task.onDelete }}" style="cursor:pointer; display:inline-flex"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div>
+                  </div>
+                </sc-for>
+              </sc-if>
+              <sc-if value="{{ group.noTasks }}" hint-placeholder-val="{{ false }}"><p style="font-size:12px; color:#9ca3af; padding:14px 18px">Tiada tugasan.</p></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ===== AUTOMATION ===== -->
+      <sc-if value="{{ isAutomation }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:12px">
+          <sc-for list="{{ automations }}" as="auto" hint-placeholder-count="5">
+            <div style="background:white; border-radius:12px; border:1px solid #ebebf4; padding:16px 20px; display:flex; align-items:center; gap:16px">
+              <div style="width:40px; height:40px; background:#ede9fe; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              </div>
+              <div style="flex:1; min-width:0">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px">
+                  <p style="font-size:13.5px; font-weight:700; color:#111827">{{ auto.name }}</p>
+                  <span style="font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:20px; background:{{ auto.tagBg }}; color:{{ auto.tagColor }}">{{ auto.statusLabel }}</span>
+                </div>
+                <p style="font-size:12px; color:#6b7280; margin-bottom:3px">{{ auto.trigger }}</p>
+                <p style="font-size:12px; color:#6b7280">{{ auto.action }}</p>
+              </div>
+              <div onClick="{{ auto.onToggle }}" style="width:38px; height:22px; background:{{ auto.toggleBg }}; border-radius:11px; position:relative; cursor:pointer; flex-shrink:0">
+                <div style="position:absolute; top:3px; width:16px; height:16px; background:white; border-radius:50%; transform:{{ auto.toggleTranslate }}; box-shadow:0 1px 3px rgba(0,0,0,0.2)"></div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ===== REPORTS ===== -->
+      <sc-if value="{{ isReports }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px">
+          <div style="background:white; border-radius:12px; padding:16px; border:1px solid #ebebf4"><p style="font-size:11.5px; color:#6b7280; font-weight:500; margin-bottom:8px">Total Leads</p><p style="font-size:28px; font-weight:800; color:#111827">{{ cntAll }}</p></div>
+          <div style="background:white; border-radius:12px; padding:16px; border:1px solid #ebebf4"><p style="font-size:11.5px; color:#6b7280; font-weight:500; margin-bottom:8px">Tempahan</p><p style="font-size:28px; font-weight:800; color:#22c55e">{{ cntBooked }}</p></div>
+          <div style="background:white; border-radius:12px; padding:16px; border:1px solid #ebebf4"><p style="font-size:11.5px; color:#6b7280; font-weight:500; margin-bottom:8px">Hasil (RM)</p><p style="font-size:28px; font-weight:800; color:#6366f1">{{ revenue }}</p></div>
+          <div style="background:white; border-radius:12px; padding:16px; border:1px solid #ebebf4"><p style="font-size:11.5px; color:#6b7280; font-weight:500; margin-bottom:8px">Kadar Penukaran</p><p style="font-size:28px; font-weight:800; color:#f59e0b">{{ conversion }}%</p></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1.6fr 1fr; gap:14px">
+          <div style="background:white; border-radius:12px; padding:18px; border:1px solid #ebebf4">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px">
+              <h3 style="font-size:13px; font-weight:700; color:#111827">Leads &amp; Tempahan Bulanan</h3>
+              <div style="display:flex; align-items:center; gap:12px">
+                <div style="display:flex; align-items:center; gap:5px"><div style="width:10px; height:10px; border-radius:2px; background:#6366f1"></div><span style="font-size:11px; color:#6b7280">Leads</span></div>
+                <div style="display:flex; align-items:center; gap:5px"><div style="width:10px; height:10px; border-radius:2px; background:#c4b5fd"></div><span style="font-size:11px; color:#6b7280">Tempahan</span></div>
+              </div>
+            </div>
+            {{ reportsChart }}
+          </div>
+          <div style="background:white; border-radius:12px; padding:18px; border:1px solid #ebebf4">
+            <h3 style="font-size:13px; font-weight:700; color:#111827; margin-bottom:14px">Leads mengikut Source</h3>
+            <sc-if value="{{ hasLeads }}" hint-placeholder-val="{{ true }}">
+              <sc-for list="{{ sourceData }}" as="bar" hint-placeholder-count="5">
+                <div style="margin-bottom:13px">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:5px"><span style="font-size:12px; color:#374151">{{ bar.label }}</span><div style="display:flex; gap:4px"><span style="font-size:12px; font-weight:700; color:#111827">{{ bar.pct }}%</span><span style="font-size:11.5px; color:#9ca3af">({{ bar.value }})</span></div></div>
+                  <div style="height:6px; background:#f3f4f6; border-radius:10px; overflow:hidden"><div style="{{ bar.barStyle }}"></div></div>
+                </div>
+              </sc-for>
+            </sc-if>
+            <sc-if value="{{ noLeads }}" hint-placeholder-val="{{ false }}"><p style="font-size:12px; color:#9ca3af; padding:14px 0">Belum ada data.</p></sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===== CONTACTS ===== -->
+      <sc-if value="{{ isContacts }}" hint-placeholder-val="{{ false }}">
+        <div style="background:white; border-radius:12px; border:1px solid #ebebf4; overflow:hidden">
+          <div style="padding:12px 18px; border-bottom:1px solid #f0f0f8; display:flex; align-items:center; gap:10px">
+            <div style="position:relative"><div style="position:absolute; left:10px; top:50%; transform:translateY(-50%)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div><input type="text" value="{{ search }}" onInput="{{ onSearch }}" placeholder="Cari kenalan..." style="padding:7px 12px 7px 28px; border:1px solid #e5e7eb; border-radius:7px; font-size:12px; background:#f9fafb; font-family:inherit; width:200px"/></div>
+            <div style="flex:1"></div>
+            <span style="font-size:12px; color:#9ca3af">{{ filteredCount }} kenalan</span>
+          </div>
+          <sc-if value="{{ hasFilteredLeads }}" hint-placeholder-val="{{ true }}">
+            <table style="width:100%; border-collapse:collapse">
+              <thead style="background:#fafafa"><tr><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px 18px; text-transform:uppercase; letter-spacing:0.4px">Kenalan</th><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px; text-transform:uppercase; letter-spacing:0.4px">No. Telefon</th><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px; text-transform:uppercase; letter-spacing:0.4px">E-mel</th><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px; text-transform:uppercase; letter-spacing:0.4px">Pakej</th><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px; text-transform:uppercase; letter-spacing:0.4px">Status</th><th style="text-align:left; font-size:11px; color:#9ca3af; font-weight:600; padding:10px; text-transform:uppercase; letter-spacing:0.4px">Last Contact</th><th style="padding:10px 18px; width:30px"></th></tr></thead>
+              <tbody>
+                <sc-for list="{{ filteredLeads }}" as="ct" hint-placeholder-count="8">
+                  <tr style="border-top:1px solid #f5f5fb">
+                    <td style="padding:10px 18px"><div style="display:flex; align-items:center; gap:10px"><div style="width:34px; height:34px; border-radius:50%; background:{{ ct.avatarBg }}; display:flex; align-items:center; justify-content:center; color:white; font-size:12px; font-weight:800; flex-shrink:0">{{ ct.initial }}</div><span style="font-size:12.5px; font-weight:600; color:#111827; white-space:nowrap">{{ ct.name }}</span></div></td>
+                    <td style="padding:10px; font-size:12px; color:#6b7280; white-space:nowrap">{{ ct.phone }}</td>
+                    <td style="padding:10px; font-size:12px; color:#6b7280">{{ ct.email }}</td>
+                    <td style="padding:10px; font-size:12px; color:#6b7280">{{ ct.service }}</td>
+                    <td style="padding:10px"><span style="{{ ct.badgeStyle }}">{{ ct.status }}</span></td>
+                    <td style="padding:10px; font-size:11.5px; color:#9ca3af; white-space:nowrap">{{ ct.lastContact }}</td>
+                    <td style="padding:10px 18px; text-align:center"><div onClick="{{ ct.onDelete }}" style="cursor:pointer; display:inline-flex"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </sc-if>
+          <sc-if value="{{ noFilteredLeads }}" hint-placeholder-val="{{ false }}"><p style="font-size:12.5px; color:#9ca3af; padding:28px 18px; text-align:center">Tiada kenalan dijumpai.</p></sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ===== SETTINGS ===== -->
+      <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:14px; max-width:720px">
+          <div style="background:white; border-radius:12px; border:1px solid #ebebf4; padding:20px">
+            <h3 style="font-size:14px; font-weight:700; color:#111827; margin-bottom:16px">Maklumat Profil</h3>
+            <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px">
+              <div style="width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); display:flex; align-items:center; justify-content:center; color:white; font-size:22px; font-weight:800">{{ studioInitial }}</div>
+              <div><p style="font-size:13px; font-weight:600; color:#111827">{{ settings.studioName }}</p><p style="font-size:11.5px; color:#9ca3af">{{ settings.plan }}</p></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px">
+              <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:6px">Nama Studio</label><input type="text" value="{{ settings.studioName }}" onInput="{{ setSetting.studioName }}" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; color:#111827; font-family:inherit"/></div>
+              <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:6px">E-mel</label><input type="text" value="{{ settings.email }}" onInput="{{ setSetting.email }}" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; color:#111827; font-family:inherit"/></div>
+              <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:6px">No. Telefon</label><input type="text" value="{{ settings.phone }}" onInput="{{ setSetting.phone }}" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; color:#111827; font-family:inherit"/></div>
+              <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:6px">Nama Pengguna</label><input type="text" value="{{ settings.userName }}" onInput="{{ setSetting.userName }}" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; color:#111827; font-family:inherit"/></div>
+            </div>
+            <div style="margin-bottom:14px"><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:6px">Alamat</label><input type="text" value="{{ settings.address }}" onInput="{{ setSetting.address }}" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; color:#111827; font-family:inherit"/></div>
+            <div style="display:flex; align-items:center; gap:10px">
+              <div onClick="{{ saveSettings }}" style="background:#6366f1; color:white; border-radius:8px; padding:9px 18px; cursor:pointer; font-size:13px; font-weight:600">Simpan Perubahan</div>
+              <sc-if value="{{ settingsSaved }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px; color:#22c55e; font-weight:600">✓ Disimpan</span></sc-if>
+            </div>
+          </div>
+          <div style="background:white; border-radius:12px; border:1px solid #ebebf4; padding:20px">
+            <h3 style="font-size:14px; font-weight:700; color:#111827; margin-bottom:6px">Pengurusan Data</h3>
+            <p style="font-size:12px; color:#9ca3af; margin-bottom:14px">Semua data disimpan secara setempat di pelayar ini (localStorage).</p>
+            <div style="display:flex; gap:10px">
+              <div onClick="{{ loadSample }}" style="border:1px solid #e5e7eb; color:#374151; border-radius:8px; padding:9px 16px; cursor:pointer; font-size:13px; font-weight:600">Muat Data Contoh</div>
+              <div onClick="{{ clearData }}" style="border:1px solid #fecaca; color:#ef4444; border-radius:8px; padding:9px 16px; cursor:pointer; font-size:13px; font-weight:600">Padam Semua Data</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+
+  <!-- ===== MODAL ===== -->
+  <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position:fixed; inset:0; background:rgba(17,24,39,0.45); display:flex; align-items:center; justify-content:center; z-index:100">
+      <div onClick="{{ stop }}" style="background:white; border-radius:14px; width:440px; max-width:92vw; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.25)">
+        <div style="padding:18px 22px; border-bottom:1px solid #f0f0f8; display:flex; align-items:center; justify-content:space-between">
+          <h3 style="font-size:15px; font-weight:700; color:#111827">{{ modalTitle }}</h3>
+          <div onClick="{{ closeModal }}" style="cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+        </div>
+        <div style="padding:20px 22px">
+          <!-- LEAD / CONTACT FORM -->
+          <sc-if value="{{ isLeadForm }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex; flex-direction:column; gap:13px">
+              <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:5px">Nama *</label><input type="text" value="{{ form.name }}" onInput="{{ setField.name }}" placeholder="Nama pelanggan" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:inherit"/></div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+                <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:5px">No. Telefon</label><input type="text" value="{{ form.phone }}" onInput="{{ setField.phone }}" placeholder="+60..." style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:inherit"/></div>
+                <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:5px">E-mel</label><input type="text" value="{{ form.email }}" onInput="{{ setField.email }}" placeholder="emel@..." style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:inherit"/></div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+                <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:5px">Source</label><select value="{{ form.source }}" onChange="{{ setField.source }}" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px"><sc-for list="{{ sourceOptions }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></div>
+                <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:5px">Pakej</label><select value="{{ form.service }}" onChange="{{ setField.service }}" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px"><sc-for list="{{ serviceOptions }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for></select></div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+                <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:5px">Status</label><select value="{{ form.status }}" onChange="{{ setField.status }}" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px"><sc-for list="{{ statusOptions }}" as="o" hint-placeholder-count="7"><option value="{{ o }}">{{ o }}</option></sc-for></select></div>
+                <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:5px">PIC</label><input type="text" value="{{ form.pic }}" onInput="{{ setField.pic }}" placeholder="Nama PIC" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:inherit"/></div>
+              </div>
+            </div>
+          </sc-if>
+          <!-- TASK FORM -->
+          <sc-if value="{{ isTaskForm }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:13px">
+              <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:5px">Tugasan *</label><input type="text" value="{{ form.title }}" onInput="{{ setField.title }}" placeholder="Cth: Follow up Nurul" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:inherit"/></div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+                <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:5px">Tarikh Tamat</label><input type="date" value="{{ form.dueDate }}" onInput="{{ setField.dueDate }}" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:inherit"/></div>
+                <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:5px">PIC</label><input type="text" value="{{ form.assignee }}" onInput="{{ setField.assignee }}" placeholder="Nama PIC" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:inherit"/></div>
+              </div>
+              <div><label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:5px">Keutamaan</label><select value="{{ form.priority }}" onChange="{{ setField.priority }}" style="width:100%; padding:9px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px"><option value="Tinggi">Tinggi</option><option value="Sederhana">Sederhana</option><option value="Rendah">Rendah</option></select></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ formError }}" hint-placeholder-val="{{ false }}"><p style="font-size:12px; color:#ef4444; margin-top:12px">{{ formErrorText }}</p></sc-if>
+        </div>
+        <div style="padding:14px 22px; border-top:1px solid #f0f0f8; display:flex; justify-content:flex-end; gap:8px">
+          <div onClick="{{ closeModal }}" style="border:1px solid #e5e7eb; color:#374151; border-radius:8px; padding:8px 16px; cursor:pointer; font-size:13px; font-weight:600">Batal</div>
+          <div onClick="{{ submitModal }}" style="background:#6366f1; color:white; border-radius:8px; padding:8px 18px; cursor:pointer; font-size:13px; font-weight:600">Simpan</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  KEY = 'pixyo_crm_v1';
+
+  defaultSettings() {
+    return { studioName:'Pixyo Studio', email:'pixyo@studio.com', phone:'+60 12-345 6789', address:'Kuala Lumpur', userName:'Admin', userRole:'Admin', plan:'Pelan Percuma' };
+  }
+
+  seed() {
+    const now = Date.now(), H = 3600000, D = 86400000;
+    const mk = (o) => ({ id: 'L'+Math.random().toString(36).slice(2,9), email:'', value:0, messages:[], ...o });
+    const leads = [
+      mk({ name:'Nurul Amani', phone:'+60 12-345 6789', email:'nurul@email.com', source:'FB Live', service:'Wedding', status:'New Lead', pic:'Ali', createdAt:now-2*60000, lastContactAt:now-2*60000, messages:[
+        {from:'customer', text:'Assalamualaikum, saya berminat dengan pakej wedding anda', at:now-40*60000},
+        {from:'me', text:'Waalaikumsalam! Terima kasih. Boleh saya tahu tarikh majlis?', at:now-38*60000},
+        {from:'customer', text:'Boleh minta quotation untuk pakej Gold?', at:now-2*60000} ] }),
+      mk({ name:'Aiman Hakimi', phone:'+60 11-234 5678', email:'aiman@gmail.com', source:'Content (IG)', service:'Wedding', status:'Waiting Reply', pic:'Faris', createdAt:now-15*60000, lastContactAt:now-15*60000, messages:[
+        {from:'customer', text:'Hai, kami dah tengok quotation yang dihantar', at:now-30*60000},
+        {from:'me', text:'Alhamdulillah! Ada sebarang pertanyaan tentang pakej?', at:now-20*60000} ] }),
+      mk({ name:'Siti Nabila', phone:'+60 10-987 6543', email:'siti@email.com', source:'Ads (FB)', service:'Nikah', status:'Follow Up', pic:'Fatin', createdAt:now-28*60000, lastContactAt:now-28*60000, messages:[
+        {from:'customer', text:'Rabu ok. Pukul 3 petang boleh?', at:now-28*60000} ] }),
+      mk({ name:'Zul & Mira', phone:'+60 12-567 8901', email:'zul@email.com', source:'Google Form', service:'Sanding', status:'Quotation Sent', pic:'Ali', value:5500, createdAt:now-1*H, lastContactAt:now-1*H }),
+      mk({ name:'Hana Adila', phone:'+60 11-890 1234', email:'hana@email.com', source:'Referral', service:'Wedding', status:'Booked', pic:'Faris', value:5500, createdAt:now-3*H, lastContactAt:now-3*H }),
+      mk({ name:'Farid Hakimi', phone:'+60 12-123 4567', email:'farid@email.com', source:'FB Live', service:'Wedding', status:'Lost', pic:'Ali', createdAt:now-5*H, lastContactAt:now-5*H }),
+      mk({ name:'Syafiqah', phone:'+60 10-456 7890', email:'syafiqah@email.com', source:'Ads (IG)', service:'Nikah', status:'Future Follow Up', pic:'Fatin', createdAt:now-1*D, lastContactAt:now-1*D }),
+      mk({ name:'Ahmad Rashid', phone:'+60 12-678 9012', email:'rashid@email.com', source:'Landing Page', service:'Wedding', status:'New Lead', pic:'Aiman', createdAt:now-1*D, lastContactAt:now-1*D }),
+      mk({ name:'Mira & Azri', phone:'+60 11-678 9012', email:'mira@email.com', source:'FB Live', service:'Wedding', status:'Booked', pic:'Faris', value:8000, createdAt:now-4*D, lastContactAt:now-4*D }),
+    ];
+    const tasks = [
+      { id:'T1', title:'Follow up Nurul Amani – hantar quotation', assignee:'Ali', due:now+3*H, priority:'Tinggi', done:false },
+      { id:'T2', title:'Hantar quotation kepada Zul & Mira', assignee:'Faris', due:now+5*H, priority:'Sederhana', done:false },
+      { id:'T3', title:'Confirm booking Hana Adila', assignee:'Faris', due:now-2*H, priority:'Tinggi', done:false },
+      { id:'T4', title:'Site visit – Siti Nabila', assignee:'Fatin', due:now+3*D, priority:'Sederhana', done:false },
+    ];
+    const automations = [
+      { id:'A1', name:'New Lead Auto-Reply', trigger:'Trigger: Lead baru diterima', action:'Action: Hantar WhatsApp greeting', active:true },
+      { id:'A2', name:'Peringatan Tiada Balas', trigger:'Trigger: Tiada balasan selepas 24 jam', action:'Action: Notifikasi kepada PIC', active:true },
+      { id:'A3', name:'Quotation Follow Up', trigger:'Trigger: Quotation dihantar > 3 hari', action:'Action: Hantar mesej susulan', active:false },
+      { id:'A4', name:'Pengesahan Tempahan', trigger:'Trigger: Status ditukar ke Booked', action:'Action: Hantar maklumat pengesahan', active:true },
+    ];
+    const activities = [
+      { type:'new_lead', name:'Nurul Amani', at:now-2*60000 },
+      { type:'quotation', name:'Zul & Mira', at:now-1*H },
+      { type:'reply', name:'Siti Nabila', at:now-28*60000 },
+      { type:'booked', name:'Hana Adila', at:now-3*H },
+    ];
+    return { leads, tasks, automations, activities, settings:this.defaultSettings() };
+  }
+
+  load() {
+    try {
+      const raw = localStorage.getItem(this.KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        return { leads:d.leads||[], tasks:d.tasks||[], automations:d.automations||[], activities:d.activities||[], settings:{...this.defaultSettings(), ...(d.settings||{})} };
+      }
+    } catch(e) {}
+    const s = this.seed();
+    try { localStorage.setItem(this.KEY, JSON.stringify(s)); } catch(e) {}
+    return s;
+  }
+
+  state = { activeView:'dashboard', selectedLeadId:null, modal:null, form:{}, formErr:'', leadFilter:'all', search:'', draft:'', settingsSaved:false, db:this.load() };
+
+  persist(db) { try { localStorage.setItem(this.KEY, JSON.stringify(db)); } catch(e) {} }
+  setDb(updater) { this.setState(s => { const db = updater(s.db); this.persist(db); return { db }; }); }
+  uid(p) { return (p||'X') + Math.random().toString(36).slice(2,9); }
+
+  renderVals() {
+    const E = React.createElement;
+    const S = this.state, db = S.db, av = S.activeView;
+    const now = Date.now();
+
+    const timeAgo = (ts) => {
+      const s = Math.floor((now-ts)/1000);
+      if (s < 60) return 'baru sahaja';
+      const m = Math.floor(s/60); if (m < 60) return m+' min lepas';
+      const h = Math.floor(m/60); if (h < 24) return h+' jam lepas';
+      const d = Math.floor(h/24); if (d < 30) return d+' hari lepas';
+      return Math.floor(d/30)+' bulan lepas';
+    };
+    const MON = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
+    const fmtDate = (ts) => { const dt = new Date(ts); return dt.getDate()+' '+MON[dt.getMonth()]; };
+    const clockTime = (ts) => { const dt = new Date(ts); let h = dt.getHours(); const mi = String(dt.getMinutes()).padStart(2,'0'); const ap = h<12?'AM':'PM'; h = h%12||12; return h+':'+mi+' '+ap; };
+
+    const views = ['dashboard','leads','messages','calendar','tasks','automation','reports','contacts','settings'];
+    const navBg={}, navIconColor={}, navTextColor={}, navTextWeight={}, navShowBar={}, navOnClick={};
+    views.forEach(v => { const a = av===v;
+      navBg[v]=a?'#ede9fe':'transparent'; navIconColor[v]=a?'#6366f1':'#9ca3af'; navTextColor[v]=a?'#5b21b6':'#6b7280';
+      navTextWeight[v]=a?'700':'500'; navShowBar[v]=a; navOnClick[v]=()=>this.setState({activeView:v, search:''}); });
+
+    const TITLES={dashboard:'Dashboard',leads:'Leads',messages:'Messages',calendar:'Calendar',tasks:'Tasks',automation:'Automation',reports:'Reports',contacts:'Contacts',settings:'Settings'};
+    const SUBS={dashboard:'Ringkasan prestasi leads anda hari ini.',leads:'Urus dan jejak semua leads anda.',messages:'Komunikasi dengan pelanggan anda.',calendar:'Jadual temujanji dan aktiviti anda.',tasks:'Senarai tugasan dan peringatan anda.',automation:'Automasi aliran kerja dan tindak balas.',reports:'Analisis prestasi dan laporan bisnes.',contacts:'Senarai kenalan dan maklumat pelanggan.',settings:'Tetapan akaun dan konfigurasi sistem.'};
+
+    const isDashboard=av==='dashboard',isLeads=av==='leads',isMessages=av==='messages',isCalendar=av==='calendar',isTasks=av==='tasks',isAutomation=av==='automation',isReports=av==='reports',isContacts=av==='contacts',isSettings=av==='settings';
+
+    const SB={'New Lead':{bg:'#dbeafe',color:'#1d4ed8'},'Waiting Reply':{bg:'#fef3c7',color:'#92400e'},'Follow Up':{bg:'#ede9fe',color:'#6d28d9'},'Quotation Sent':{bg:'#fef9c3',color:'#a16207'},'Booked':{bg:'#dcfce7',color:'#166534'},'Lost':{bg:'#fee2e2',color:'#991b1b'},'Future Follow Up':{bg:'#fce7f3',color:'#9d174d'}};
+    const statusOptions=['New Lead','Waiting Reply','Follow Up','Quotation Sent','Booked','Lost','Future Follow Up'];
+    const mkBadge=s=>({fontSize:'10.5px',fontWeight:600,padding:'3px 9px',borderRadius:'20px',whiteSpace:'nowrap',display:'inline-block',background:(SB[s]||{}).bg||'#f3f4f6',color:(SB[s]||{}).color||'#6b7280'});
+    const AV=['#6366f1','#8b5cf6','#ec4899','#fb923c','#22c55e','#0ea5e9','#a78bfa','#34d399','#f59e0b'];
+    const avatarFor=(name,i)=>AV[((name?name.charCodeAt(0):0)+(i||0)*3) % AV.length];
+
+    const leads = db.leads;
+    const count = (st)=>leads.filter(l=>l.status===st).length;
+    const cntAll=leads.length, cntNew=count('New Lead'), cntBooked=count('Booked'), cntLost=count('Lost');
+    const cntWaiting=count('Waiting Reply'), cntFollow=count('Follow Up'), cntQuote=count('Quotation Sent'), cntFuture=count('Future Follow Up');
+    const cntProgress=cntWaiting+cntFollow+cntQuote+cntFuture;
+
+    const ic=(stroke,sw,...ch)=>E('svg',{width:17,height:17,viewBox:'0 0 24 24',fill:'none',stroke,strokeWidth:sw||2,strokeLinecap:'round'},...ch);
+    const kpis=[
+      {label:'New Lead', value:cntNew, iconBg:'#ede9fe', iconEl:ic('#7c3aed',2,E('path',{d:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'}),E('circle',{cx:9,cy:7,r:4}),E('path',{d:'M23 21v-2a4 4 0 0 0-3-3.87'}),E('path',{d:'M16 3.13a4 4 0 0 1 0 7.75'}))},
+      {label:'Waiting Reply', value:cntWaiting, iconBg:'#fef3c7', iconEl:ic('#d97706',2,E('circle',{cx:12,cy:12,r:10}),E('polyline',{points:'12 6 12 12 16 14'}))},
+      {label:'Follow Up', value:cntFollow, iconBg:'#dbeafe', iconEl:ic('#3b82f6',2,E('line',{x1:22,y1:2,x2:11,y2:13}),E('polygon',{points:'22 2 15 22 11 13 2 9 22 2'}))},
+      {label:'Quotation', value:cntQuote, iconBg:'#fef9c3', iconEl:ic('#a16207',2,E('path',{d:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'}),E('polyline',{points:'14 2 14 8 20 8'}),E('line',{x1:16,y1:13,x2:8,y2:13}),E('line',{x1:16,y1:17,x2:8,y2:17}))},
+      {label:'Booked', value:cntBooked, iconBg:'#dcfce7', iconEl:ic('#16a34a',2,E('polyline',{points:'9 11 12 14 22 4'}),E('path',{d:'M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11'}))},
+      {label:'Lost', value:cntLost, iconBg:'#fee2e2', iconEl:ic('#ef4444',2,E('circle',{cx:12,cy:12,r:10}),E('line',{x1:15,y1:9,x2:9,y2:15}),E('line',{x1:9,y1:9,x2:15,y2:15}))},
+    ];
+
+    function donutArcs(data,cx,cy,r,ir){const total=data.reduce((s,d)=>s+d.value,0)||1;let angle=-Math.PI/2;const gap=0.04;return data.map(d=>{const sweep=(d.value/total)*2*Math.PI-gap,sa=angle+gap/2,ea=sa+sweep;angle+=(d.value/total)*2*Math.PI;const co=Math.cos,si=Math.sin;const x1=cx+r*co(sa),y1=cy+r*si(sa),x2=cx+r*co(ea),y2=cy+r*si(ea);const ix1=cx+ir*co(sa),iy1=cy+ir*si(sa),ix2=cx+ir*co(ea),iy2=cy+ir*si(ea);const lg=sweep>Math.PI?1:0;return {...d,path:'M'+x1.toFixed(1)+' '+y1.toFixed(1)+' A'+r+' '+r+' 0 '+lg+' 1 '+x2.toFixed(1)+' '+y2.toFixed(1)+' L'+ix2.toFixed(1)+' '+iy2.toFixed(1)+' A'+ir+' '+ir+' 0 '+lg+' 0 '+ix1.toFixed(1)+' '+iy1.toFixed(1)+'Z'};});}
+    const pctOf=(n)=>cntAll?Math.round((n/cntAll)*100):0;
+
+    const bucket=(src)=>{const s=(src||'').toLowerCase();if(s.indexOf('live')>=0)return 'FB Live';if(s.indexOf('content')>=0||s.indexOf('instagram')>=0||(s.indexOf('ig')>=0&&s.indexOf('ads')<0))return 'Content';if(s.indexOf('ads')>=0)return 'Ads';if(s.indexOf('referral')>=0)return 'Referral';return 'Others';};
+    const SRC_COL={'FB Live':'#6366f1','Content':'#a78bfa','Ads':'#fb923c','Referral':'#f87171','Others':'#c4b5fd'};
+    const srcCounts={'FB Live':0,'Content':0,'Ads':0,'Referral':0,'Others':0};
+    leads.forEach(l=>{srcCounts[bucket(l.source)]++;});
+    const sourceData=Object.keys(srcCounts).map(k=>({label:k,value:srcCounts[k],pct:pctOf(srcCounts[k]),color:SRC_COL[k],barStyle:{height:'100%',width:pctOf(srcCounts[k])+'%',background:SRC_COL[k],borderRadius:'10px'}}));
+    const sArcs=donutArcs(sourceData.filter(d=>d.value>0),100,100,80,55);
+    const sourceDonut=E('svg',{viewBox:'0 0 200 200',style:{width:148,height:148,flexShrink:0}},
+      ...(sArcs.length?sArcs.map((d,i)=>E('path',{key:i,d:d.path,fill:d.color})):[E('circle',{cx:100,cy:100,r:67,fill:'none',stroke:'#f3f4f6',strokeWidth:25})]),
+      E('text',{x:100,y:95,textAnchor:'middle',fontSize:22,fontWeight:800,fill:'#111827',fontFamily:'Plus Jakarta Sans'},String(cntAll)),
+      E('text',{x:100,y:113,textAnchor:'middle',fontSize:11,fill:'#9ca3af',fontFamily:'Plus Jakarta Sans'},'Total'));
+
+    const statusList=[['New Lead','#3b82f6'],['Waiting Reply','#f59e0b'],['Follow Up','#8b5cf6'],['Quotation Sent','#eab308'],['Booked','#22c55e'],['Lost','#ef4444'],['Future Follow Up','#ec4899']];
+    const statusData=statusList.map(p=>{const v=count(p[0]);return {label:p[0],value:v,pct:pctOf(v),color:p[1]};}).filter(d=>d.value>0);
+    const stArcs=donutArcs(statusData,100,100,80,55);
+    const statusDonut=E('svg',{viewBox:'0 0 200 200',style:{width:150,height:150,display:'block',margin:'0 auto'}},
+      ...(stArcs.length?stArcs.map((d,i)=>E('path',{key:i,d:d.path,fill:d.color})):[E('circle',{cx:100,cy:100,r:67,fill:'none',stroke:'#f3f4f6',strokeWidth:25})]),
+      E('text',{x:100,y:95,textAnchor:'middle',fontSize:22,fontWeight:800,fill:'#111827',fontFamily:'Plus Jakarta Sans'},String(cntAll)),
+      E('text',{x:100,y:113,textAnchor:'middle',fontSize:11,fill:'#9ca3af',fontFamily:'Plus Jakarta Sans'},'Total'));
+
+    const fTotal=cntAll;
+    const fGreet=leads.filter(l=>(l.messages&&l.messages.length)||l.status!=='New Lead').length;
+    const fQual=leads.filter(l=>['Follow Up','Quotation Sent','Booked','Future Follow Up'].indexOf(l.status)>=0).length;
+    const fQuote=leads.filter(l=>['Quotation Sent','Booked'].indexOf(l.status)>=0).length;
+    const fBook=cntBooked;
+    const fp=(n)=>fTotal?Math.round((n/fTotal)*100):0;
+    const funnelStages=[{label:'New Lead',count:fTotal,pct:fp(fTotal)},{label:'Dihubungi',count:fGreet,pct:fp(fGreet)},{label:'Qualified',count:fQual,pct:fp(fQual)},{label:'Quotation Sent',count:fQuote,pct:fp(fQuote)},{label:'Booked',count:fBook,pct:fp(fBook)}];
+    const funnel=E('svg',{viewBox:'0 0 190 265',style:{width:110,height:215,flexShrink:0}},
+      E('polygon',{points:'0,0 190,0 162,49 28,49',fill:'#6366f1'}),E('polygon',{points:'28,53 162,53 136,102 54,102',fill:'#818cf8'}),
+      E('polygon',{points:'54,106 136,106 113,155 77,155',fill:'#fb923c'}),E('polygon',{points:'77,159 113,159 98,208 92,208',fill:'#fbbf24'}),
+      E('polygon',{points:'92,212 98,212 96,261 94,261',fill:'#34d399'}));
+
+    const ACT={new_lead:{bg:'#ede9fe',title:'New lead diterima',el:ic('#7c3aed',2,E('path',{d:'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'}),E('circle',{cx:12,cy:7,r:4}))},
+      quotation:{bg:'#fef9c3',title:'Quotation dihantar',el:ic('#a16207',2,E('path',{d:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'}),E('polyline',{points:'14 2 14 8 20 8'}))},
+      reply:{bg:'#dbeafe',title:'Pelanggan membalas',el:ic('#1d4ed8',2,E('path',{d:'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'}))},
+      booked:{bg:'#dcfce7',title:'Lead berjaya ditempah!',el:ic('#166534',2.5,E('polyline',{points:'20 6 9 17 4 12'}))},
+      status:{bg:'#f3f4f6',title:'Status dikemaskini',el:ic('#6b7280',2,E('path',{d:'M12 20h9'}),E('path',{d:'M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z'}))},
+      message:{bg:'#ede9fe',title:'Mesej dihantar',el:ic('#7c3aed',2,E('line',{x1:22,y1:2,x2:11,y2:13}),E('polygon',{points:'22 2 15 22 11 13 2 9 22 2'}))}};
+    const recentActivities=(db.activities||[]).slice(0,5).map(a=>{const t=ACT[a.type]||ACT.status;return {title:t.title,name:a.name,time:timeAgo(a.at),iconBg:t.bg,iconEl:t.el};});
+    const hasActivities=recentActivities.length>0, noActivities=!hasActivities;
+
+    const sorted=[...leads].sort((a,b)=>b.createdAt-a.createdAt);
+    const latestLeads=sorted.slice(0,7).map(l=>({...l,badgeStyle:mkBadge(l.status),lastContact:timeAgo(l.lastContactAt)}));
+    const hasLeads=cntAll>0, noLeads=!hasLeads;
+
+    const q=S.search.trim().toLowerCase();
+    const matchQ=(l)=>!q||[l.name,l.phone,l.source,l.service,l.email,l.pic].some(v=>(v||'').toLowerCase().indexOf(q)>=0);
+    const matchFilter=(l)=>S.leadFilter==='all'||(S.leadFilter==='In Progress'?['Waiting Reply','Follow Up','Quotation Sent','Future Follow Up'].indexOf(l.status)>=0:l.status===S.leadFilter);
+    const updateStatus=(id,st)=>this.setDb(d=>{const lds=d.leads.map(l=>l.id===id?{...l,status:st,lastContactAt:Date.now()}:l);const lead=d.leads.find(l=>l.id===id);const acts=[{type:st==='Booked'?'booked':'status',name:lead?lead.name:'',at:Date.now()},...(d.activities||[])].slice(0,50);return {...d,leads:lds,activities:acts};});
+    const delLead=(id)=>{const lead=leads.find(l=>l.id===id);if(window.confirm('Padam lead '+(lead?lead.name:'')+'?'))this.setDb(d=>({...d,leads:d.leads.filter(l=>l.id!==id)}));};
+    const decorate=(l,i)=>({...l,badgeStyle:mkBadge(l.status),lastContact:timeAgo(l.lastContactAt),initial:(l.name||'?')[0].toUpperCase(),avatarBg:avatarFor(l.name,i),selectStyle:{...mkBadge(l.status),border:'none',cursor:'pointer',appearance:'none',paddingRight:'9px'},onStatusChange:(e)=>updateStatus(l.id,e.target.value),onDelete:()=>delLead(l.id)});
+    const filteredLeads=sorted.filter(l=>matchFilter(l)&&matchQ(l)).map(decorate);
+    const filteredCount=filteredLeads.length;
+    const hasFilteredLeads=filteredCount>0, noFilteredLeads=!hasFilteredLeads;
+
+    const TABS=[['all','Semua',cntAll],['New Lead','New Lead',cntNew],['Follow Up','Follow Up',cntFollow],['Booked','Booked',cntBooked],['Lost','Lost',cntLost]];
+    const leadTabs=TABS.map(t=>{const key=t[0],active=S.leadFilter===key;return {label:t[1]+' ('+t[2]+')',onClick:()=>this.setState({leadFilter:key}),style:{padding:'5px 12px',borderRadius:'6px',fontSize:'12px',fontWeight:active?600:500,cursor:'pointer',background:active?'#6366f1':'#f3f4f6',color:active?'white':'#6b7280'}};});
+
+    const convAll=[...leads].filter(l=>l.status!=='Lost').sort((a,b)=>b.lastContactAt-a.lastContactAt);
+    const convFiltered=convAll.filter(matchQ);
+    let selId=S.selectedLeadId;
+    if(!convFiltered.find(c=>c.id===selId)) selId=convFiltered[0]?convFiltered[0].id:null;
+    const platformFor=(src)=>{const b=bucket(src);if(b==='Content')return {p:'IG',c:'#e1306c'};if(b==='Ads')return {p:'FB',c:'#1877f2'};return {p:'WA',c:'#25d366'};};
+    const conversations=convFiltered.map((l,i)=>{const pf=platformFor(l.source);const last=l.messages&&l.messages.length?l.messages[l.messages.length-1]:null;const unread=!!(last&&last.from==='customer');return {id:l.id,name:l.name,initial:(l.name||'?')[0].toUpperCase(),avatarBg:avatarFor(l.name,i),platform:pf.p,platformColor:pf.c,lastMsg:last?last.text:'Belum ada mesej',time:last?timeAgo(last.at):'',unread,containerBg:l.id===selId?'#f5f3ff':'white',onClick:()=>this.setState({selectedLeadId:l.id})};});
+    const activeLead=convFiltered.find(c=>c.id===selId)||null;
+    const activeConv=activeLead?{name:activeLead.name,initial:(activeLead.name||'?')[0].toUpperCase(),avatarBg:avatarFor(activeLead.name,0),status:activeLead.status,platform:platformFor(activeLead.source).p}:{name:'',initial:'',avatarBg:'#6366f1',status:'',platform:''};
+    const chatMessages=(activeLead&&activeLead.messages?activeLead.messages:[]).map(m=>{const cust=m.from==='customer';return {text:m.text,time:clockTime(m.at),wrapperStyle:{display:'flex',marginBottom:'10px',justifyContent:cust?'flex-start':'flex-end'},bubbleStyle:cust?{background:'#f3f4f6',color:'#374151',padding:'10px 14px',borderRadius:'4px 12px 12px 12px',fontSize:'13px',maxWidth:'72%',lineHeight:'1.5'}:{background:'#6366f1',color:'white',padding:'10px 14px',borderRadius:'12px 4px 12px 12px',fontSize:'13px',maxWidth:'72%',lineHeight:'1.5'}};});
+    const hasConversations=conversations.length>0, noConversations=!hasConversations;
+    const hasChat=chatMessages.length>0, noChat=!!activeLead&&!hasChat;
+    const doSend=()=>{const text=this.state.draft.trim();const sid=selId;if(!text||!sid)return;this.setDb(d=>{const lds=d.leads.map(l=>l.id===sid?{...l,messages:[...(l.messages||[]),{from:'me',text,at:Date.now()}],lastContactAt:Date.now()}:l);const lead=d.leads.find(l=>l.id===sid);return {...d,leads:lds,activities:[{type:'message',name:lead?lead.name:'',at:Date.now()},...(d.activities||[])].slice(0,50)};});this.setState({draft:''});};
+    const onDraftKey=(e)=>{if(e.key==='Enter'){e.preventDefault();doSend();}};
+    const unreadCount=conversations.filter(c=>c.unread).length;
+    const hasUnread=unreadCount>0;
+
+    const startToday=new Date();startToday.setHours(0,0,0,0);const sT=startToday.getTime();
+    const endToday=sT+86400000, endWeek=sT+8*86400000;
+    const PR={Tinggi:{c:'#ef4444',b:'#fee2e2'},Sederhana:{c:'#d97706',b:'#fef3c7'},Rendah:{c:'#16a34a',b:'#dcfce7'}};
+    const toggleTask=(id)=>this.setDb(d=>({...d,tasks:d.tasks.map(t=>t.id===id?{...t,done:!t.done}:t)}));
+    const delTask=(id)=>this.setDb(d=>({...d,tasks:d.tasks.filter(t=>t.id!==id)}));
+    const decTask=(t)=>{const pr=PR[t.priority]||PR.Sederhana;return {...t,due:fmtDate(t.due)+', '+clockTime(t.due),assigneeInitial:(t.assignee||'?')[0].toUpperCase(),pColor:pr.c,pBg:pr.b,titleStyle:{fontSize:'13px',color:t.done?'#9ca3af':'#111827',textDecoration:t.done?'line-through':'none'},checkStyle:t.done?{width:'18px',height:'18px',background:'#6366f1',borderRadius:'5px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,cursor:'pointer'}:{width:'18px',height:'18px',border:'2px solid #d1d5db',borderRadius:'5px',flexShrink:0,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'},onToggle:()=>toggleTask(t.id),onDelete:()=>delTask(t.id)};};
+    const tasks=db.tasks;
+    const overdue=tasks.filter(t=>!t.done&&t.due<sT);
+    const todayT=tasks.filter(t=>t.due>=sT&&t.due<endToday);
+    const weekT=tasks.filter(t=>t.due>=endToday&&t.due<endWeek);
+    const laterT=tasks.filter(t=>t.due>=endWeek);
+    const mkGroup=(title,arr,cb,cc)=>({title,count:arr.length,countBg:cb,countColor:cc,tasks:arr.map(decTask),hasTasks:arr.length>0,noTasks:arr.length===0});
+    const taskGroups=[mkGroup('Tertunggak',overdue,'#fee2e2','#991b1b'),mkGroup('Hari Ini',todayT,'#fef3c7','#92400e'),mkGroup('Minggu Ini',weekT,'#dbeafe','#1d4ed8'),mkGroup('Akan Datang',laterT,'#f3f4f6','#6b7280')].filter(g=>g.count>0||g.title==='Hari Ini');
+    const remTasks=todayT.length+overdue.length;
+
+    const toggleAuto=(id)=>this.setDb(d=>({...d,automations:d.automations.map(a=>a.id===id?{...a,active:!a.active}:a)}));
+    const automations=db.automations.map(a=>({...a,toggleBg:a.active?'#6366f1':'#e5e7eb',toggleTranslate:a.active?'translateX(18px)':'translateX(2px)',statusLabel:a.active?'Aktif':'Tidak Aktif',tagBg:a.active?'#dcfce7':'#f3f4f6',tagColor:a.active?'#166534':'#6b7280',onToggle:()=>toggleAuto(a.id)}));
+
+    const PRICE={Wedding:5500,Sanding:4500,Nikah:1800,Tunang:2500};
+    const revenueNum=leads.filter(l=>l.status==='Booked').reduce((s,l)=>s+(Number(l.value)||PRICE[l.service]||0),0);
+    const revenue=revenueNum.toLocaleString('en-US');
+    const conversion=cntAll?((cntBooked/cntAll)*100).toFixed(1):'0';
+    const months=[];for(let i=5;i>=0;i--){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-i);months.push({key:d.getFullYear()+'-'+d.getMonth(),label:MON[d.getMonth()],leads:0,booked:0});}
+    leads.forEach(l=>{const d=new Date(l.createdAt);const key=d.getFullYear()+'-'+d.getMonth();const m=months.find(x=>x.key===key);if(m){m.leads++;if(l.status==='Booked')m.booked++;}});
+    const maxV=Math.max(10,...months.map(m=>m.leads))+2, cH=155;
+    const reportsChart=E('svg',{viewBox:'0 0 480 210',style:{width:'100%',height:210}},
+      ...[0,Math.round(maxV/3),Math.round(2*maxV/3),maxV].map((v,i)=>{const y=cH-(v/maxV)*cH+20;return [E('line',{key:'gl'+i,x1:48,y1:y,x2:470,y2:y,stroke:'#f3f4f6',strokeWidth:1}),E('text',{key:'gt'+i,x:42,y:y+4,textAnchor:'end',fontSize:10,fill:'#d1d5db',fontFamily:'Plus Jakarta Sans'},v)];}).reduce((a,b)=>a.concat(b),[]),
+      ...months.map((d,i)=>{const x=60+i*68,bh1=(d.leads/maxV)*cH,bh2=(d.booked/maxV)*cH,y1=cH-bh1+20,y2=cH-bh2+20;return [E('rect',{key:'b1'+i,x,y:y1,width:28,height:Math.max(0,bh1),fill:'#6366f1',rx:5}),E('rect',{key:'b2'+i,x:x+32,y:y2,width:22,height:Math.max(0,bh2),fill:'#c4b5fd',rx:5}),E('text',{key:'ml'+i,x:x+25,y:195,textAnchor:'middle',fontSize:10.5,fill:'#9ca3af',fontFamily:'Plus Jakarta Sans'},d.label)];}).reduce((a,b)=>a.concat(b),[]));
+
+    const today=new Date();const cyr=today.getFullYear(),cmo=today.getMonth();
+    const MONFULL=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+    const calTitle=MONFULL[cmo]+' '+cyr;
+    const firstDow=new Date(cyr,cmo,1).getDay();const daysInMonth=new Date(cyr,cmo+1,0).getDate();
+    const evByDay={};
+    tasks.forEach(t=>{const d=new Date(t.due);if(d.getFullYear()===cyr&&d.getMonth()===cmo){(evByDay[d.getDate()]=evByDay[d.getDate()]||[]).push({label:t.title,bg:'#ede9fe',color:'#6366f1'});}});
+    leads.filter(l=>l.status==='Booked').forEach(l=>{const d=new Date(l.lastContactAt);if(d.getFullYear()===cyr&&d.getMonth()===cmo){(evByDay[d.getDate()]=evByDay[d.getDate()]||[]).push({label:'Booked – '+l.name,bg:'#dcfce7',color:'#16a34a'});}});
+    const calDays=[];for(let i=0;i<firstDow;i++)calDays.push({hasDay:false,cellBg:'#fafafa',dayNum:'',dayNumStyle:{},events:[]});
+    for(let dd=1;dd<=daysInMonth;dd++){const isToday=dd===today.getDate();calDays.push({hasDay:true,dayNum:String(dd),cellBg:isToday?'#f5f3ff':'white',dayNumStyle:isToday?{width:'24px',height:'24px',borderRadius:'50%',background:'#6366f1',color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',fontWeight:'800'}:{fontSize:'12px',fontWeight:'500',color:'#374151',width:'24px',height:'24px',display:'flex',alignItems:'center',justifyContent:'center'},events:(evByDay[dd]||[]).map(e=>({label:e.label,chipStyle:{fontSize:'10px',fontWeight:600,padding:'2px 6px',borderRadius:'4px',background:e.bg,color:e.color,marginBottom:'2px',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}))});}
+    while(calDays.length%7!==0)calDays.push({hasDay:false,cellBg:'#fafafa',dayNum:'',dayNumStyle:{},events:[]});
+    const calWeeks=[];for(let i=0;i<calDays.length;i+=7)calWeeks.push(calDays.slice(i,i+7));
+
+    const remFollowUp=cntFollow, remQuotation=cntQuote;
+    const goFollowUp=()=>this.setState({activeView:'leads',leadFilter:'Follow Up'});
+    const goQuotation=()=>this.setState({activeView:'leads',leadFilter:'all',search:'quotation'});
+    const settings=db.settings;
+    const studioInitial=(settings.studioName||'P')[0].toUpperCase();
+    const userInitial=(settings.userName||'A')[0].toUpperCase();
+
+    const setSetting={};['studioName','email','phone','address','userName'].forEach(k=>setSetting[k]=(e)=>{const v=e.target.value;this.setState(s=>({db:{...s.db,settings:{...s.db.settings,[k]:v}},settingsSaved:false}));});
+    const saveSettings=()=>{this.persist(this.state.db);this.setState({settingsSaved:true});};
+    const clearData=()=>{if(window.confirm('Padam SEMUA data? Tindakan ini tidak boleh diundur.')){try{localStorage.removeItem(this.KEY);}catch(e){}this.setState({db:{leads:[],tasks:[],automations:[],activities:[],settings:this.defaultSettings()},selectedLeadId:null});}};
+    const loadSample=()=>{if(window.confirm('Muat data contoh? Ini akan menggantikan data semasa.')){const sd=this.seed();this.persist(sd);this.setState({db:sd,selectedLeadId:null});}};
+
+    const modal=S.modal, modalOpen=!!modal;
+    const isLeadForm=modal==='lead'||modal==='contact', isTaskForm=modal==='task';
+    const modalTitle=modal==='lead'?'Tambah Lead Baru':modal==='contact'?'Tambah Kenalan':modal==='task'?'Tambah Tugasan':'';
+    const sourceOptions=['FB Live','Content (IG)','Ads (FB)','Ads (IG)','Referral','Google Form','Landing Page','Instagram','WhatsApp'];
+    const serviceOptions=['Wedding','Nikah','Sanding','Tunang'];
+    const setField={};['name','phone','email','source','service','status','pic','title','assignee','dueDate','priority'].forEach(k=>setField[k]=(e)=>{const v=e.target.value;this.setState(s=>({form:{...s.form,[k]:v},formErr:''}));});
+    const openLeadModal=()=>this.setState({modal:'lead',formErr:'',form:{name:'',phone:'',email:'',source:'FB Live',service:'Wedding',status:'New Lead',pic:''}});
+    const openContactModal=()=>this.setState({modal:'contact',formErr:'',form:{name:'',phone:'',email:'',source:'Referral',service:'Wedding',status:'New Lead',pic:''}});
+    const openTaskModal=()=>this.setState({modal:'task',formErr:'',form:{title:'',assignee:'',dueDate:'',priority:'Sederhana'}});
+    const closeModal=()=>this.setState({modal:null});
+    const stop=(e)=>{e.stopPropagation();};
+    const submitModal=()=>{
+      const f=this.state.form;
+      if(this.state.modal==='lead'||this.state.modal==='contact'){ if(!f.name||!f.name.trim()){this.setState({formErr:'Nama wajib diisi.'});return;}
+        const lead={id:this.uid('L'),name:f.name.trim(),phone:f.phone||'',email:f.email||'',source:f.source||'FB Live',service:f.service||'Wedding',status:f.status||'New Lead',pic:f.pic||'',value:0,messages:[],createdAt:Date.now(),lastContactAt:Date.now()};
+        this.setDb(d=>({...d,leads:[lead,...d.leads],activities:[{type:'new_lead',name:lead.name,at:Date.now()},...(d.activities||[])].slice(0,50)}));
+        this.setState({modal:null});
+      } else if(this.state.modal==='task'){ if(!f.title||!f.title.trim()){this.setState({formErr:'Tugasan wajib diisi.'});return;}
+        let due=Date.now()+86400000; if(f.dueDate){const dt=new Date(f.dueDate+'T09:00:00');if(!isNaN(dt))due=dt.getTime();}
+        const task={id:this.uid('T'),title:f.title.trim(),assignee:f.assignee||'Admin',due,priority:f.priority||'Sederhana',done:false};
+        this.setDb(d=>({...d,tasks:[...d.tasks,task]}));
+        this.setState({modal:null});
+      }
+    };
+
+    const showAddLead=isLeads, showAddTask=isTasks, showAddContact=isContacts;
+
+    return {
+      navBg,navIconColor,navTextColor,navTextWeight,navShowBar,navOnClick,
+      pageTitle:TITLES[av],pageSubtitle:SUBS[av],
+      isDashboard,isLeads,isMessages,isCalendar,isTasks,isAutomation,isReports,isContacts,isSettings,
+      showAddLead,showAddTask,showAddContact,
+      kpis,sourceDonut,sourceData,statusDonut,statusData,funnel,funnelStages,
+      recentActivities,hasActivities,noActivities,
+      latestLeads,hasLeads,noLeads,
+      cntAll,cntNew,cntProgress,cntBooked,cntLost,
+      statusOptions,leadTabs,filteredLeads,filteredCount,hasFilteredLeads,noFilteredLeads,
+      search:S.search,onSearch:(e)=>this.setState({search:e.target.value}),
+      conversations,activeConv,chatMessages,hasConversations,noConversations,hasChat,noChat,
+      draft:S.draft,onDraft:(e)=>this.setState({draft:e.target.value}),onDraftKey,sendMessage:doSend,
+      unreadCount,hasUnread,
+      taskGroups,
+      automations,
+      revenue,conversion,reportsChart,
+      calTitle,calWeeks,
+      remFollowUp,remQuotation,remTasks,goFollowUp,goQuotation,
+      settings,studioInitial,userInitial,setSetting,saveSettings,settingsSaved:S.settingsSaved,clearData,loadSample,
+      modalOpen,modalTitle,isLeadForm,isTaskForm,form:S.form,setField,sourceOptions,serviceOptions,
+      openLeadModal,openContactModal,openTaskModal,closeModal,submitModal,stop,
+      formError:!!S.formErr,formErrorText:S.formErr,
+    };
+  }
+}
+</script>
+</body>
+</html>
