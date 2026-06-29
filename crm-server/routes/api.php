@@ -4,8 +4,11 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 
-// Public webhook — protected by the secret embedded in the URL (Apps Script posts here).
+// Public webhooks — protected by the secret embedded in the URL. The ingest is
+// source-agnostic (source comes from the payload), so the same handler serves
+// Google (Apps Script) and the landing site.
 Route::post('webhook/google/{secret}', [WebhookController::class, 'google']);
+Route::post('webhook/landing/{secret}', [WebhookController::class, 'google']);
 
 // Dashboard API — guarded by a static bearer token (Phase 1, local).
 Route::middleware('api.token')->group(function () {
