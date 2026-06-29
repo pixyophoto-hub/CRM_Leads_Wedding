@@ -1,21 +1,23 @@
 # Pixyo CRM Dashboard
 
-Single-page CRM dashboard for a wedding-photography studio (Bahasa Melayu UI). Fully operational front-end app — leads, messages, tasks, automation, reports, contacts and settings — with data persisted in the browser via `localStorage`.
+Single-page CRM dashboard for a wedding-photography studio (Bahasa Melayu UI) — leads, messages, tasks, automation, reports, contacts and settings.
+
+> **This is now the front-end of a backend-driven app.** As of Phase 1 the dashboard
+> reads/writes data from a Laravel + MySQL backend (the `crm-server` app) via `/api/*`,
+> so leads from Google can flow in automatically and data is shared, not per-browser.
+> Opening `index.html` on its own will just show "Memuatkan…" — it needs the backend.
 
 ## Files
-- `index.html` — hostable entry point (open this).
-- `CRM Dashboard.dc.html` — same app in Design Component format.
-- `support.js` — the DC runtime (loads React 18 from a CDN and mounts the app). Must sit next to the HTML.
+- `index.html` — dashboard source (DC template + logic, wired to the API).
+- `CRM Dashboard.dc.html` — same app in Design Component format (kept in sync).
+- `support.js` — the DC runtime (loads React 18 from a CDN and mounts the app).
 
 ## Run
-Serve the folder over HTTP (not `file://`):
+The backend serves this dashboard at its root URL. Run the `crm-server` Laravel app
+(see its README), then open `http://127.0.0.1:8091/`. After editing this source, copy it
+into the backend with `python ../crm-server/sync-dashboard.py`.
 
-```bash
-python -m http.server 8077
-# then open http://localhost:8077/index.html
-```
-
-Or upload `index.html` + `support.js` together to any static host (Netlify, GitHub Pages, etc.). Needs internet on first load (React CDN + Google Fonts).
+The earlier standalone/localStorage version (no backend) is in this repo's git history.
 
 ## Features
 - 9 views: Dashboard, Leads, Messages, Calendar, Tasks, Automation, Reports, Contacts, Settings.

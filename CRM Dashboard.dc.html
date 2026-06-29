@@ -498,7 +498,7 @@
           </div>
           <div style="background:white; border-radius:12px; border:1px solid #ebebf4; padding:20px">
             <h3 style="font-size:14px; font-weight:700; color:#111827; margin-bottom:6px">Pengurusan Data</h3>
-            <p style="font-size:12px; color:#9ca3af; margin-bottom:14px">Semua data disimpan secara setempat di pelayar ini (localStorage).</p>
+            <p style="font-size:12px; color:#9ca3af; margin-bottom:14px">Semua data disimpan dalam pelayan CRM (pangkalan data).</p>
             <div style="display:flex; gap:10px">
               <div onClick="{{ loadSample }}" style="border:1px solid #e5e7eb; color:#374151; border-radius:8px; padding:9px 16px; cursor:pointer; font-size:13px; font-weight:600">Muat Data Contoh</div>
               <div onClick="{{ clearData }}" style="border:1px solid #fecaca; color:#ef4444; border-radius:8px; padding:9px 16px; cursor:pointer; font-size:13px; font-weight:600">Padam Semua Data</div>
@@ -558,80 +558,52 @@
     </div>
   </sc-if>
 
+  <!-- ===== LOADING ===== -->
+  <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; background:#f0f0f7; display:flex; align-items:center; justify-content:center; z-index:200"><span style="font-size:13px; color:#9ca3af">Memuatkan…</span></div>
+  </sc-if>
+
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  KEY = 'pixyo_crm_v1';
+  cfg = (window.__CRM || { apiBase:'', token:'' });
 
   defaultSettings() {
-    return { studioName:'Pixyo Studio', email:'', phone:'', address:'', userName:'Admin', userRole:'Admin', plan:'Pelan Percuma' };
+    return { studioName:'', email:'', phone:'', address:'', userName:'Admin', userRole:'Admin', plan:'Pelan Percuma' };
   }
 
-  blank() {
-    const s = this.seed();
-    return { ...s, leads:[], tasks:[], activities:[] };
+  state = { activeView:'dashboard', selectedLeadId:null, modal:null, form:{}, formErr:'', leadFilter:'all', search:'', draft:'', settingsSaved:false, loading:true,
+            db:{ leads:[], tasks:[], automations:[], activities:[], settings:this.defaultSettings() } };
+
+  // ---- API client (same-origin Laravel backend) ----
+  api(method, path, body) {
+    return fetch(this.cfg.apiBase + '/api' + path, {
+      method,
+      headers: Object.assign({ 'Authorization':'Bearer ' + this.cfg.token }, body ? { 'Content-Type':'application/json' } : {}),
+      body: body ? JSON.stringify(body) : undefined,
+    }).then(r => { if (!r.ok) throw new Error('API ' + r.status); return r.json(); });
   }
 
-  seed() {
-    const now = Date.now(), H = 3600000, D = 86400000;
-    const mk = (o) => ({ id: 'L'+Math.random().toString(36).slice(2,9), email:'', value:0, messages:[], ...o });
-    const leads = [
-      mk({ name:'Nurul Amani', phone:'+60 12-345 6789', email:'nurul@email.com', source:'FB Live', service:'Wedding', status:'New Lead', pic:'Ali', createdAt:now-2*60000, lastContactAt:now-2*60000, messages:[
-        {from:'customer', text:'Assalamualaikum, saya berminat dengan pakej wedding anda', at:now-40*60000},
-        {from:'me', text:'Waalaikumsalam! Terima kasih. Boleh saya tahu tarikh majlis?', at:now-38*60000},
-        {from:'customer', text:'Boleh minta quotation untuk pakej Gold?', at:now-2*60000} ] }),
-      mk({ name:'Aiman Hakimi', phone:'+60 11-234 5678', email:'aiman@gmail.com', source:'Content (IG)', service:'Wedding', status:'Waiting Reply', pic:'Faris', createdAt:now-15*60000, lastContactAt:now-15*60000, messages:[
-        {from:'customer', text:'Hai, kami dah tengok quotation yang dihantar', at:now-30*60000},
-        {from:'me', text:'Alhamdulillah! Ada sebarang pertanyaan tentang pakej?', at:now-20*60000} ] }),
-      mk({ name:'Siti Nabila', phone:'+60 10-987 6543', email:'siti@email.com', source:'Ads (FB)', service:'Nikah', status:'Follow Up', pic:'Fatin', createdAt:now-28*60000, lastContactAt:now-28*60000, messages:[
-        {from:'customer', text:'Rabu ok. Pukul 3 petang boleh?', at:now-28*60000} ] }),
-      mk({ name:'Zul & Mira', phone:'+60 12-567 8901', email:'zul@email.com', source:'Google Form', service:'Sanding', status:'Quotation Sent', pic:'Ali', value:5500, createdAt:now-1*H, lastContactAt:now-1*H }),
-      mk({ name:'Hana Adila', phone:'+60 11-890 1234', email:'hana@email.com', source:'Referral', service:'Wedding', status:'Booked', pic:'Faris', value:5500, createdAt:now-3*H, lastContactAt:now-3*H }),
-      mk({ name:'Farid Hakimi', phone:'+60 12-123 4567', email:'farid@email.com', source:'FB Live', service:'Wedding', status:'Lost', pic:'Ali', createdAt:now-5*H, lastContactAt:now-5*H }),
-      mk({ name:'Syafiqah', phone:'+60 10-456 7890', email:'syafiqah@email.com', source:'Ads (IG)', service:'Nikah', status:'Future Follow Up', pic:'Fatin', createdAt:now-1*D, lastContactAt:now-1*D }),
-      mk({ name:'Ahmad Rashid', phone:'+60 12-678 9012', email:'rashid@email.com', source:'Landing Page', service:'Wedding', status:'New Lead', pic:'Aiman', createdAt:now-1*D, lastContactAt:now-1*D }),
-      mk({ name:'Mira & Azri', phone:'+60 11-678 9012', email:'mira@email.com', source:'FB Live', service:'Wedding', status:'Booked', pic:'Faris', value:8000, createdAt:now-4*D, lastContactAt:now-4*D }),
-    ];
-    const tasks = [
-      { id:'T1', title:'Follow up Nurul Amani – hantar quotation', assignee:'Ali', due:now+3*H, priority:'Tinggi', done:false },
-      { id:'T2', title:'Hantar quotation kepada Zul & Mira', assignee:'Faris', due:now+5*H, priority:'Sederhana', done:false },
-      { id:'T3', title:'Confirm booking Hana Adila', assignee:'Faris', due:now-2*H, priority:'Tinggi', done:false },
-      { id:'T4', title:'Site visit – Siti Nabila', assignee:'Fatin', due:now+3*D, priority:'Sederhana', done:false },
-    ];
-    const automations = [
-      { id:'A1', name:'New Lead Auto-Reply', trigger:'Trigger: Lead baru diterima', action:'Action: Hantar WhatsApp greeting', active:true },
-      { id:'A2', name:'Peringatan Tiada Balas', trigger:'Trigger: Tiada balasan selepas 24 jam', action:'Action: Notifikasi kepada PIC', active:true },
-      { id:'A3', name:'Quotation Follow Up', trigger:'Trigger: Quotation dihantar > 3 hari', action:'Action: Hantar mesej susulan', active:false },
-      { id:'A4', name:'Pengesahan Tempahan', trigger:'Trigger: Status ditukar ke Booked', action:'Action: Hantar maklumat pengesahan', active:true },
-    ];
-    const activities = [
-      { type:'new_lead', name:'Nurul Amani', at:now-2*60000 },
-      { type:'quotation', name:'Zul & Mira', at:now-1*H },
-      { type:'reply', name:'Siti Nabila', at:now-28*60000 },
-      { type:'booked', name:'Hana Adila', at:now-3*H },
-    ];
-    return { leads, tasks, automations, activities, settings:this.defaultSettings() };
+  refresh() {
+    return this.api('GET', '/state')
+      .then(db => this.setState({ db, loading:false }))
+      .catch(e => { console.error('refresh failed', e); this.setState({ loading:false }); });
   }
 
-  load() {
-    try {
-      const raw = localStorage.getItem(this.KEY);
-      if (raw) {
-        const d = JSON.parse(raw);
-        return { leads:d.leads||[], tasks:d.tasks||[], automations:d.automations||[], activities:d.activities||[], settings:{...this.defaultSettings(), ...(d.settings||{})} };
-      }
-    } catch(e) {}
-    const s = this.blank();
-    try { localStorage.setItem(this.KEY, JSON.stringify(s)); } catch(e) {}
-    return s;
+  // Fire a mutation, then re-pull authoritative state from the server.
+  mutate(p) { return Promise.resolve(p).then(() => this.refresh()).catch(e => console.error('mutate failed', e)); }
+
+  componentDidMount() {
+    this.refresh();
+    // Light polling so leads sent from Google appear automatically.
+    this._poll = setInterval(() => {
+      const s = this.state;
+      if (!s.modal && s.activeView !== 'settings') this.refresh();
+    }, 20000);
   }
 
-  state = { activeView:'dashboard', selectedLeadId:null, modal:null, form:{}, formErr:'', leadFilter:'all', search:'', draft:'', settingsSaved:false, db:this.load() };
-
-  persist(db) { try { localStorage.setItem(this.KEY, JSON.stringify(db)); } catch(e) {} }
-  setDb(updater) { this.setState(s => { const db = updater(s.db); this.persist(db); return { db }; }); }
-  uid(p) { return (p||'X') + Math.random().toString(36).slice(2,9); }
+  componentWillUnmount() { if (this._poll) clearInterval(this._poll); }
 
   renderVals() {
     const E = React.createElement;
@@ -733,8 +705,8 @@ class Component extends DCLogic {
     const q=S.search.trim().toLowerCase();
     const matchQ=(l)=>!q||[l.name,l.phone,l.source,l.service,l.email,l.pic].some(v=>(v||'').toLowerCase().indexOf(q)>=0);
     const matchFilter=(l)=>S.leadFilter==='all'||(S.leadFilter==='In Progress'?['Waiting Reply','Follow Up','Quotation Sent','Future Follow Up'].indexOf(l.status)>=0:l.status===S.leadFilter);
-    const updateStatus=(id,st)=>this.setDb(d=>{const lds=d.leads.map(l=>l.id===id?{...l,status:st,lastContactAt:Date.now()}:l);const lead=d.leads.find(l=>l.id===id);const acts=[{type:st==='Booked'?'booked':'status',name:lead?lead.name:'',at:Date.now()},...(d.activities||[])].slice(0,50);return {...d,leads:lds,activities:acts};});
-    const delLead=(id)=>{const lead=leads.find(l=>l.id===id);if(window.confirm('Padam lead '+(lead?lead.name:'')+'?'))this.setDb(d=>({...d,leads:d.leads.filter(l=>l.id!==id)}));};
+    const updateStatus=(id,st)=>this.mutate(this.api('PATCH','/leads/'+id,{status:st}));
+    const delLead=(id)=>{const lead=leads.find(l=>l.id===id);if(window.confirm('Padam lead '+(lead?lead.name:'')+'?'))this.mutate(this.api('DELETE','/leads/'+id));};
     const decorate=(l,i)=>({...l,badgeStyle:mkBadge(l.status),lastContact:timeAgo(l.lastContactAt),initial:(l.name||'?')[0].toUpperCase(),avatarBg:avatarFor(l.name,i),selectStyle:{...mkBadge(l.status),border:'none',cursor:'pointer',appearance:'none',paddingRight:'9px'},onStatusChange:(e)=>updateStatus(l.id,e.target.value),onDelete:()=>delLead(l.id)});
     const filteredLeads=sorted.filter(l=>matchFilter(l)&&matchQ(l)).map(decorate);
     const filteredCount=filteredLeads.length;
@@ -754,7 +726,7 @@ class Component extends DCLogic {
     const chatMessages=(activeLead&&activeLead.messages?activeLead.messages:[]).map(m=>{const cust=m.from==='customer';return {text:m.text,time:clockTime(m.at),wrapperStyle:{display:'flex',marginBottom:'10px',justifyContent:cust?'flex-start':'flex-end'},bubbleStyle:cust?{background:'#f3f4f6',color:'#374151',padding:'10px 14px',borderRadius:'4px 12px 12px 12px',fontSize:'13px',maxWidth:'72%',lineHeight:'1.5'}:{background:'#6366f1',color:'white',padding:'10px 14px',borderRadius:'12px 4px 12px 12px',fontSize:'13px',maxWidth:'72%',lineHeight:'1.5'}};});
     const hasConversations=conversations.length>0, noConversations=!hasConversations;
     const hasChat=chatMessages.length>0, noChat=!!activeLead&&!hasChat;
-    const doSend=()=>{const text=this.state.draft.trim();const sid=selId;if(!text||!sid)return;this.setDb(d=>{const lds=d.leads.map(l=>l.id===sid?{...l,messages:[...(l.messages||[]),{from:'me',text,at:Date.now()}],lastContactAt:Date.now()}:l);const lead=d.leads.find(l=>l.id===sid);return {...d,leads:lds,activities:[{type:'message',name:lead?lead.name:'',at:Date.now()},...(d.activities||[])].slice(0,50)};});this.setState({draft:''});};
+    const doSend=()=>{const text=this.state.draft.trim();const sid=selId;if(!text||!sid)return;this.setState({draft:''});this.mutate(this.api('POST','/leads/'+sid+'/messages',{text}));};
     const onDraftKey=(e)=>{if(e.key==='Enter'){e.preventDefault();doSend();}};
     const unreadCount=conversations.filter(c=>c.unread).length;
     const hasUnread=unreadCount>0;
@@ -762,8 +734,8 @@ class Component extends DCLogic {
     const startToday=new Date();startToday.setHours(0,0,0,0);const sT=startToday.getTime();
     const endToday=sT+86400000, endWeek=sT+8*86400000;
     const PR={Tinggi:{c:'#ef4444',b:'#fee2e2'},Sederhana:{c:'#d97706',b:'#fef3c7'},Rendah:{c:'#16a34a',b:'#dcfce7'}};
-    const toggleTask=(id)=>this.setDb(d=>({...d,tasks:d.tasks.map(t=>t.id===id?{...t,done:!t.done}:t)}));
-    const delTask=(id)=>this.setDb(d=>({...d,tasks:d.tasks.filter(t=>t.id!==id)}));
+    const toggleTask=(id)=>{const t=db.tasks.find(x=>x.id===id);this.mutate(this.api('PATCH','/tasks/'+id,{done:!(t&&t.done)}));};
+    const delTask=(id)=>this.mutate(this.api('DELETE','/tasks/'+id));
     const decTask=(t)=>{const pr=PR[t.priority]||PR.Sederhana;return {...t,due:fmtDate(t.due)+', '+clockTime(t.due),assigneeInitial:(t.assignee||'?')[0].toUpperCase(),pColor:pr.c,pBg:pr.b,titleStyle:{fontSize:'13px',color:t.done?'#9ca3af':'#111827',textDecoration:t.done?'line-through':'none'},checkStyle:t.done?{width:'18px',height:'18px',background:'#6366f1',borderRadius:'5px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,cursor:'pointer'}:{width:'18px',height:'18px',border:'2px solid #d1d5db',borderRadius:'5px',flexShrink:0,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'},onToggle:()=>toggleTask(t.id),onDelete:()=>delTask(t.id)};};
     const tasks=db.tasks;
     const overdue=tasks.filter(t=>!t.done&&t.due<sT);
@@ -774,7 +746,7 @@ class Component extends DCLogic {
     const taskGroups=[mkGroup('Tertunggak',overdue,'#fee2e2','#991b1b'),mkGroup('Hari Ini',todayT,'#fef3c7','#92400e'),mkGroup('Minggu Ini',weekT,'#dbeafe','#1d4ed8'),mkGroup('Akan Datang',laterT,'#f3f4f6','#6b7280')].filter(g=>g.count>0||g.title==='Hari Ini');
     const remTasks=todayT.length+overdue.length;
 
-    const toggleAuto=(id)=>this.setDb(d=>({...d,automations:d.automations.map(a=>a.id===id?{...a,active:!a.active}:a)}));
+    const toggleAuto=(id)=>{const a=db.automations.find(x=>x.id===id);this.mutate(this.api('PATCH','/automations/'+id,{active:!(a&&a.active)}));};
     const automations=db.automations.map(a=>({...a,toggleBg:a.active?'#6366f1':'#e5e7eb',toggleTranslate:a.active?'translateX(18px)':'translateX(2px)',statusLabel:a.active?'Aktif':'Tidak Aktif',tagBg:a.active?'#dcfce7':'#f3f4f6',tagColor:a.active?'#166534':'#6b7280',onToggle:()=>toggleAuto(a.id)}));
 
     const PRICE={Wedding:5500,Sanding:4500,Nikah:1800,Tunang:2500};
@@ -808,9 +780,9 @@ class Component extends DCLogic {
     const userInitial=(settings.userName||'A')[0].toUpperCase();
 
     const setSetting={};['studioName','email','phone','address','userName'].forEach(k=>setSetting[k]=(e)=>{const v=e.target.value;this.setState(s=>({db:{...s.db,settings:{...s.db.settings,[k]:v}},settingsSaved:false}));});
-    const saveSettings=()=>{this.persist(this.state.db);this.setState({settingsSaved:true});};
-    const clearData=()=>{if(window.confirm('Padam SEMUA data? Tindakan ini tidak boleh diundur.')){try{localStorage.removeItem(this.KEY);}catch(e){}this.setState({db:{leads:[],tasks:[],automations:[],activities:[],settings:this.defaultSettings()},selectedLeadId:null});}};
-    const loadSample=()=>{if(window.confirm('Muat data contoh? Ini akan menggantikan data semasa.')){const sd=this.seed();this.persist(sd);this.setState({db:sd,selectedLeadId:null});}};
+    const saveSettings=()=>{this.api('PUT','/settings',this.state.db.settings).then(s=>this.setState({db:{...this.state.db,settings:s},settingsSaved:true})).catch(e=>console.error(e));};
+    const clearData=()=>{if(window.confirm('Padam SEMUA data? Tindakan ini tidak boleh diundur.')){this.setState({selectedLeadId:null});this.mutate(this.api('POST','/clear'));}};
+    const loadSample=()=>{if(window.confirm('Muat data contoh? Ini akan menggantikan data semasa.')){this.setState({selectedLeadId:null});this.mutate(this.api('POST','/seed'));}};
 
     const modal=S.modal, modalOpen=!!modal;
     const isLeadForm=modal==='lead'||modal==='contact', isTaskForm=modal==='task';
@@ -826,20 +798,20 @@ class Component extends DCLogic {
     const submitModal=()=>{
       const f=this.state.form;
       if(this.state.modal==='lead'||this.state.modal==='contact'){ if(!f.name||!f.name.trim()){this.setState({formErr:'Nama wajib diisi.'});return;}
-        const lead={id:this.uid('L'),name:f.name.trim(),phone:f.phone||'',email:f.email||'',source:f.source||'FB Live',service:f.service||'Wedding',status:f.status||'New Lead',pic:f.pic||'',value:0,messages:[],createdAt:Date.now(),lastContactAt:Date.now()};
-        this.setDb(d=>({...d,leads:[lead,...d.leads],activities:[{type:'new_lead',name:lead.name,at:Date.now()},...(d.activities||[])].slice(0,50)}));
+        const lead={name:f.name.trim(),phone:f.phone||'',email:f.email||'',source:f.source||'FB Live',service:f.service||'Wedding',status:f.status||'New Lead',pic:f.pic||''};
         this.setState({modal:null});
+        this.mutate(this.api('POST','/leads',lead));
       } else if(this.state.modal==='task'){ if(!f.title||!f.title.trim()){this.setState({formErr:'Tugasan wajib diisi.'});return;}
         let due=Date.now()+86400000; if(f.dueDate){const dt=new Date(f.dueDate+'T09:00:00');if(!isNaN(dt))due=dt.getTime();}
-        const task={id:this.uid('T'),title:f.title.trim(),assignee:f.assignee||'Admin',due,priority:f.priority||'Sederhana',done:false};
-        this.setDb(d=>({...d,tasks:[...d.tasks,task]}));
         this.setState({modal:null});
+        this.mutate(this.api('POST','/tasks',{title:f.title.trim(),assignee:f.assignee||'Admin',due,priority:f.priority||'Sederhana'}));
       }
     };
 
     const showAddLead=isLeads, showAddTask=isTasks, showAddContact=isContacts;
 
     return {
+      loading:S.loading,
       navBg,navIconColor,navTextColor,navTextWeight,navShowBar,navOnClick,
       pageTitle:TITLES[av],pageSubtitle:SUBS[av],
       isDashboard,isLeads,isMessages,isCalendar,isTasks,isAutomation,isReports,isContacts,isSettings,
